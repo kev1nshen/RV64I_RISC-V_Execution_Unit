@@ -1,0 +1,824 @@
+-- ============================================================
+-- Script     : TS_ExecUnit_Csum_SingleSWSep2Ch_C4.do
+-- Timing Simulation Script
+-- Arithmetic : ConditionalSum
+-- Shift      : SingleSW2ChSep
+-- Device     : Cyclone IV
+-- Transcript : TS_ExecUnit_Csum_SingleSWSep2Ch_C4.do
+-- ============================================================
+# run -all
+# ** Note: ** Note: Simulation started
+#    Time: 0 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=0 PropDelayY=13300 ps PropDelayFlag=39259 ps
+#    Time: 180259 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=1 PropDelayY=13300 ps PropDelayFlag=38675 ps
+#    Time: 359934 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=2 PropDelayY=40242 ps PropDelayFlag=40242 ps
+#    Time: 541176 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=3 PropDelayY=13417 ps PropDelayFlag=38722 ps
+#    Time: 720898 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=4 PropDelayY=26372 ps PropDelayFlag=26372 ps
+#    Time: 888270 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=5 PropDelayY=38722 ps PropDelayFlag=38722 ps
+#    Time: 1067992 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=6 PropDelayY=40939 ps PropDelayFlag=40939 ps
+#    Time: 1249931 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=7 PropDelayY=40939 ps PropDelayFlag=40939 ps
+#    Time: 1431870 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=8 PropDelayY=18452 ps PropDelayFlag=18452 ps
+#    Time: 1591322 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=9 PropDelayY=18828 ps PropDelayFlag=39334 ps
+#    Time: 1771656 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=10 PropDelayY=19048 ps PropDelayFlag=35681 ps
+#    Time: 1948337 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=11 PropDelayY=19255 ps PropDelayFlag=35151 ps
+#    Time: 2124488 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=12 PropDelayY=20030 ps PropDelayFlag=20030 ps
+#    Time: 2285518 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=13 PropDelayY=20091 ps PropDelayFlag=20091 ps
+#    Time: 2446609 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=14 PropDelayY=21067 ps PropDelayFlag=21067 ps
+#    Time: 2608676 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=15 PropDelayY=18687 ps PropDelayFlag=18687 ps
+#    Time: 2768363 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=16 PropDelayY=20441 ps PropDelayFlag=25090 ps
+#    Time: 2934453 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=17 PropDelayY=20441 ps PropDelayFlag=25708 ps
+#    Time: 3101161 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=18 PropDelayY=18586 ps PropDelayFlag=18586 ps
+#    Time: 3260747 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=19 PropDelayY=18938 ps PropDelayFlag=18938 ps
+#    Time: 3420685 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=20 PropDelayY=13978 ps PropDelayFlag=14947 ps
+#    Time: 3576632 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=21 PropDelayY=16647 ps PropDelayFlag=38722 ps
+#    Time: 3756354 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=22 PropDelayY=16647 ps PropDelayFlag=16647 ps
+#    Time: 3914001 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=23 PropDelayY=13978 ps PropDelayFlag=13978 ps
+#    Time: 4068979 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=24 PropDelayY=16017 ps PropDelayFlag=16017 ps
+#    Time: 4225996 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=25 PropDelayY=16186 ps PropDelayFlag=16186 ps
+#    Time: 4383182 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=26 PropDelayY=8998 ps PropDelayFlag=8998 ps
+#    Time: 4533180 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=27 PropDelayY=8028 ps PropDelayFlag=8598 ps
+#    Time: 4682778 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=28 PropDelayY=25829 ps PropDelayFlag=38986 ps
+#    Time: 4862764 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=29 PropDelayY=8178 ps PropDelayFlag=8998 ps
+#    Time: 5012762 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=30 PropDelayY=12761 ps PropDelayFlag=38675 ps
+#    Time: 5192437 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=31 PropDelayY=27016 ps PropDelayFlag=27016 ps
+#    Time: 5360453 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=32 PropDelayY=27430 ps PropDelayFlag=38986 ps
+#    Time: 5540439 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=33 PropDelayY=20909 ps PropDelayFlag=25090 ps
+#    Time: 5706529 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=34 PropDelayY=40242 ps PropDelayFlag=40242 ps
+#    Time: 5887771 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=35 PropDelayY=13726 ps PropDelayFlag=38675 ps
+#    Time: 6067446 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=36 PropDelayY=19255 ps PropDelayFlag=35151 ps
+#    Time: 6243597 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=37 PropDelayY=18687 ps PropDelayFlag=18687 ps
+#    Time: 6403284 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=38 PropDelayY=18586 ps PropDelayFlag=18586 ps
+#    Time: 6562870 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=39 PropDelayY=19328 ps PropDelayFlag=19328 ps
+#    Time: 6723198 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: All test vectors processed
+#    Time: 6723198 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: Total failures = 0
+#    Time: 6723198 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: Worst PropDelayY    = 40939 ps
+#    Time: 6723198 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: Worst PropDelayFlag = 40939 ps
+#    Time: 6723198 ps  Iteration: 0  Instance: /tbexecunit
+
+
+
+
+
+-- ============================================================
+-- Script     : TS_ExecUnit_Csum_SingleSWSep2Ch_A2.do
+-- Timing Simulation Script
+-- Arithmetic : ConditionalSum
+-- Shift      : SingleSW2ChSep
+-- Device     : Arria II
+-- Transcript : TS_ExecUnit_Csum_SingleSWSep2Ch_A2.do
+-- ============================================================
+# ** Note: ** Note: Simulation started
+#    Time: 0 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=0 PropDelayY=14694 ps PropDelayFlag=30953 ps
+#    Time: 171953 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=1 PropDelayY=15002 ps PropDelayFlag=21968 ps
+#    Time: 334921 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=2 PropDelayY=31953 ps PropDelayFlag=31953 ps
+#    Time: 507874 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=3 PropDelayY=14587 ps PropDelayFlag=31953 ps
+#    Time: 680827 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=4 PropDelayY=25663 ps PropDelayFlag=25935 ps
+#    Time: 847762 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=5 PropDelayY=31761 ps PropDelayFlag=31761 ps
+#    Time: 1020523 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=6 PropDelayY=31465 ps PropDelayFlag=31465 ps
+#    Time: 1192988 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=7 PropDelayY=31465 ps PropDelayFlag=31465 ps
+#    Time: 1365453 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=8 PropDelayY=15558 ps PropDelayFlag=18910 ps
+#    Time: 1525363 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=9 PropDelayY=16055 ps PropDelayFlag=30761 ps
+#    Time: 1697124 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=10 PropDelayY=15229 ps PropDelayFlag=21968 ps
+#    Time: 1860092 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=11 PropDelayY=15634 ps PropDelayFlag=21968 ps
+#    Time: 2023060 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=12 PropDelayY=16924 ps PropDelayFlag=18949 ps
+#    Time: 2183009 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=13 PropDelayY=17702 ps PropDelayFlag=17702 ps
+#    Time: 2341711 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=14 PropDelayY=18331 ps PropDelayFlag=18331 ps
+#    Time: 2501042 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=15 PropDelayY=15999 ps PropDelayFlag=18949 ps
+#    Time: 2660991 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=16 PropDelayY=17758 ps PropDelayFlag=18910 ps
+#    Time: 2820901 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=17 PropDelayY=17505 ps PropDelayFlag=18949 ps
+#    Time: 2980850 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=18 PropDelayY=17435 ps PropDelayFlag=18949 ps
+#    Time: 3140799 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=19 PropDelayY=16002 ps PropDelayFlag=16002 ps
+#    Time: 3297801 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=20 PropDelayY=14973 ps PropDelayFlag=14973 ps
+#    Time: 3453774 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=21 PropDelayY=14063 ps PropDelayFlag=30670 ps
+#    Time: 3625444 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=22 PropDelayY=14059 ps PropDelayFlag=14059 ps
+#    Time: 3780503 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=23 PropDelayY=14732 ps PropDelayFlag=14732 ps
+#    Time: 3936235 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=24 PropDelayY=14063 ps PropDelayFlag=14063 ps
+#    Time: 4091298 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=25 PropDelayY=15817 ps PropDelayFlag=15817 ps
+#    Time: 4248115 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=26 PropDelayY=9293 ps PropDelayFlag=9293 ps
+#    Time: 4398408 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=27 PropDelayY=9964 ps PropDelayFlag=9964 ps
+#    Time: 4549372 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=28 PropDelayY=11567 ps PropDelayFlag=21968 ps
+#    Time: 4712340 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=29 PropDelayY=8782 ps PropDelayFlag=9293 ps
+#    Time: 4862633 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=30 PropDelayY=15002 ps PropDelayFlag=21968 ps
+#    Time: 5025601 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=31 PropDelayY=23558 ps PropDelayFlag=23558 ps
+#    Time: 5190159 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=32 PropDelayY=23278 ps PropDelayFlag=24833 ps
+#    Time: 5355992 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=33 PropDelayY=18142 ps PropDelayFlag=18142 ps
+#    Time: 5515134 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=34 PropDelayY=31953 ps PropDelayFlag=31953 ps
+#    Time: 5688087 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=35 PropDelayY=15002 ps PropDelayFlag=18716 ps
+#    Time: 5847803 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=36 PropDelayY=15634 ps PropDelayFlag=21968 ps
+#    Time: 6010771 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=37 PropDelayY=15999 ps PropDelayFlag=18949 ps
+#    Time: 6170720 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=38 PropDelayY=17435 ps PropDelayFlag=18949 ps
+#    Time: 6330669 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=39 PropDelayY=17029 ps PropDelayFlag=17029 ps
+#    Time: 6488698 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: All test vectors processed
+#    Time: 6488698 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: Total failures = 0
+#    Time: 6488698 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: Worst PropDelayY    = 31953 ps
+#    Time: 6488698 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: Worst PropDelayFlag = 31953 ps
+#    Time: 6488698 ps  Iteration: 0  Instance: /tbexecunit
+
+
+
+
+
+-- ============================================================
+-- Script     : TS_ExecUnit_Cskip_SingleZU2ChRev_C4.do
+-- Timing Simulation Script
+-- Arithmetic : CarrySkip
+-- Shift      : SingleZU2ChRev
+-- Device     : Cyclone IV
+-- Transcript : TS_ExecUnit_Cskip_SingleZU2ChRev_C4.do
+-- ============================================================
+# ** Note: ** Note: Simulation started
+#    Time: 0 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=0 PropDelayY=16368 ps PropDelayFlag=72339 ps
+#    Time: 213339 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=1 PropDelayY=16368 ps PropDelayFlag=80854 ps
+#    Time: 435193 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=2 PropDelayY=79594 ps PropDelayFlag=79594 ps
+#    Time: 655787 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=3 PropDelayY=16014 ps PropDelayFlag=73204 ps
+#    Time: 869991 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=4 PropDelayY=67513 ps PropDelayFlag=69982 ps
+#    Time: 1080973 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=5 PropDelayY=72291 ps PropDelayFlag=72291 ps
+#    Time: 1294264 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=6 PropDelayY=81980 ps PropDelayFlag=82682 ps
+#    Time: 1517946 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=7 PropDelayY=81857 ps PropDelayFlag=81857 ps
+#    Time: 1740803 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=8 PropDelayY=19139 ps PropDelayFlag=22334 ps
+#    Time: 1904137 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=9 PropDelayY=19029 ps PropDelayFlag=72339 ps
+#    Time: 2117476 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=10 PropDelayY=18290 ps PropDelayFlag=78831 ps
+#    Time: 2337307 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=11 PropDelayY=21052 ps PropDelayFlag=78831 ps
+#    Time: 2557138 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=12 PropDelayY=19997 ps PropDelayFlag=21618 ps
+#    Time: 2719756 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=13 PropDelayY=19371 ps PropDelayFlag=19371 ps
+#    Time: 2880127 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=14 PropDelayY=20152 ps PropDelayFlag=20152 ps
+#    Time: 3041279 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=15 PropDelayY=18897 ps PropDelayFlag=21618 ps
+#    Time: 3203897 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=16 PropDelayY=19603 ps PropDelayFlag=22334 ps
+#    Time: 3367231 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=17 PropDelayY=18870 ps PropDelayFlag=21618 ps
+#    Time: 3529849 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=18 PropDelayY=19430 ps PropDelayFlag=21618 ps
+#    Time: 3692467 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=19 PropDelayY=17801 ps PropDelayFlag=17801 ps
+#    Time: 3851268 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=20 PropDelayY=13978 ps PropDelayFlag=13978 ps
+#    Time: 4006246 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=21 PropDelayY=16647 ps PropDelayFlag=72291 ps
+#    Time: 4219537 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=22 PropDelayY=16647 ps PropDelayFlag=16647 ps
+#    Time: 4377184 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=23 PropDelayY=13978 ps PropDelayFlag=13978 ps
+#    Time: 4532162 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=24 PropDelayY=16017 ps PropDelayFlag=16017 ps
+#    Time: 4689179 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=25 PropDelayY=16186 ps PropDelayFlag=16186 ps
+#    Time: 4846365 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=26 PropDelayY=7932 ps PropDelayFlag=7932 ps
+#    Time: 4995297 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=27 PropDelayY=8229 ps PropDelayFlag=8229 ps
+#    Time: 5144526 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=28 PropDelayY=81854 ps PropDelayFlag=81854 ps
+#    Time: 5367380 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=29 PropDelayY=7777 ps PropDelayFlag=7932 ps
+#    Time: 5516312 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=30 PropDelayY=16368 ps PropDelayFlag=80854 ps
+#    Time: 5738166 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=31 PropDelayY=42721 ps PropDelayFlag=46240 ps
+#    Time: 5925406 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=32 PropDelayY=44399 ps PropDelayFlag=81854 ps
+#    Time: 6148260 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=33 PropDelayY=18090 ps PropDelayFlag=18090 ps
+#    Time: 6307350 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=34 PropDelayY=79475 ps PropDelayFlag=79475 ps
+#    Time: 6527825 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=35 PropDelayY=16368 ps PropDelayFlag=81603 ps
+#    Time: 6750428 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=36 PropDelayY=21052 ps PropDelayFlag=78831 ps
+#    Time: 6970259 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=37 PropDelayY=18897 ps PropDelayFlag=21618 ps
+#    Time: 7132877 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=38 PropDelayY=19430 ps PropDelayFlag=21618 ps
+#    Time: 7295495 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=39 PropDelayY=18657 ps PropDelayFlag=18657 ps
+#    Time: 7455152 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: All test vectors processed
+#    Time: 7455152 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: Total failures = 0
+#    Time: 7455152 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: Worst PropDelayY    = 81980 ps
+#    Time: 7455152 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: Worst PropDelayFlag = 82682 ps
+#    Time: 7455152 ps  Iteration: 0  Instance: /tbexecunit
+
+
+
+
+
+
+-- ============================================================
+-- Script     : TS_ExecUnit_Cskip_SingleZU2ChRev_A2.do
+-- Timing Simulation Script
+-- Arithmetic : CarrySkip
+-- Shift      : SingleZU2ChRev
+-- Device     : Arria II
+-- Transcript : TS_ExecUnit_Cskip_SingleZU2ChRev_A2.do
+-- ============================================================
+# ** Note: ** Note: Simulation started
+#    Time: 0 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=0 PropDelayY=17454 ps PropDelayFlag=32305 ps
+#    Time: 173305 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=1 PropDelayY=17454 ps PropDelayFlag=19630 ps
+#    Time: 333935 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=2 PropDelayY=35780 ps PropDelayFlag=35780 ps
+#    Time: 510715 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=3 PropDelayY=19028 ps PropDelayFlag=32369 ps
+#    Time: 684084 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=4 PropDelayY=32144 ps PropDelayFlag=32144 ps
+#    Time: 857228 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=5 PropDelayY=32263 ps PropDelayFlag=32263 ps
+#    Time: 1030491 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=6 PropDelayY=30763 ps PropDelayFlag=30763 ps
+#    Time: 1202254 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=7 PropDelayY=30763 ps PropDelayFlag=30763 ps
+#    Time: 1374017 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=8 PropDelayY=16140 ps PropDelayFlag=25612 ps
+#    Time: 1540629 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=9 PropDelayY=15984 ps PropDelayFlag=32305 ps
+#    Time: 1713934 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=10 PropDelayY=16027 ps PropDelayFlag=16438 ps
+#    Time: 1871372 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=11 PropDelayY=16381 ps PropDelayFlag=16438 ps
+#    Time: 2028810 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=12 PropDelayY=16439 ps PropDelayFlag=16560 ps
+#    Time: 2186370 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=13 PropDelayY=17705 ps PropDelayFlag=17705 ps
+#    Time: 2345075 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=14 PropDelayY=16818 ps PropDelayFlag=16818 ps
+#    Time: 2502893 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=15 PropDelayY=16600 ps PropDelayFlag=16600 ps
+#    Time: 2660493 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=16 PropDelayY=16275 ps PropDelayFlag=27298 ps
+#    Time: 2828791 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=17 PropDelayY=16275 ps PropDelayFlag=16560 ps
+#    Time: 2986351 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=18 PropDelayY=16050 ps PropDelayFlag=16560 ps
+#    Time: 3143911 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=19 PropDelayY=14522 ps PropDelayFlag=14522 ps
+#    Time: 3299433 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=20 PropDelayY=14973 ps PropDelayFlag=14973 ps
+#    Time: 3455406 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=21 PropDelayY=14063 ps PropDelayFlag=31760 ps
+#    Time: 3628166 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=22 PropDelayY=14059 ps PropDelayFlag=14059 ps
+#    Time: 3783225 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=23 PropDelayY=14732 ps PropDelayFlag=14732 ps
+#    Time: 3938957 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=24 PropDelayY=14063 ps PropDelayFlag=14063 ps
+#    Time: 4094020 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=25 PropDelayY=15817 ps PropDelayFlag=15817 ps
+#    Time: 4250837 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=26 PropDelayY=4351 ps PropDelayFlag=4351 ps
+#    Time: 4396188 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=27 PropDelayY=4353 ps PropDelayFlag=4353 ps
+#    Time: 4541541 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=28 PropDelayY=9677 ps PropDelayFlag=13638 ps
+#    Time: 4696179 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=29 PropDelayY=4121 ps PropDelayFlag=4351 ps
+#    Time: 4841530 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=30 PropDelayY=15823 ps PropDelayFlag=16438 ps
+#    Time: 4998968 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=31 PropDelayY=26035 ps PropDelayFlag=26035 ps
+#    Time: 5166003 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=32 PropDelayY=24140 ps PropDelayFlag=24140 ps
+#    Time: 5331143 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=33 PropDelayY=15619 ps PropDelayFlag=20534 ps
+#    Time: 5492677 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=34 PropDelayY=35780 ps PropDelayFlag=35780 ps
+#    Time: 5669457 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=35 PropDelayY=19028 ps PropDelayFlag=19532 ps
+#    Time: 5829989 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=36 PropDelayY=16381 ps PropDelayFlag=16438 ps
+#    Time: 5987427 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=37 PropDelayY=16600 ps PropDelayFlag=16600 ps
+#    Time: 6145027 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=38 PropDelayY=16050 ps PropDelayFlag=16560 ps
+#    Time: 6302587 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=39 PropDelayY=16078 ps PropDelayFlag=16078 ps
+#    Time: 6459665 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: All test vectors processed
+#    Time: 6459665 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: Total failures = 0
+#    Time: 6459665 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: Worst PropDelayY    = 35780 ps
+#    Time: 6459665 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: Worst PropDelayFlag = 35780 ps
+#    Time: 6459665 ps  Iteration: 0  Instance: /tbexecunit
+
+
+
+
+
+
+-- ============================================================
+-- Script     : TS_ExecUnit_Cselect_SingleSWSep2Ch_C4.do
+-- Timing Simulation Script
+-- Arithmetic : CarrySelect
+-- Shift      : SingleSW2ChSep
+-- Device     : Cyclone IV
+-- Transcript : TS_ExecUnit_Cselect_SingleSWSep2Ch_C4.do
+-- ============================================================
+# ** Note: ** Note: Simulation started
+#    Time: 0 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=0 PropDelayY=15476 ps PropDelayFlag=26422 ps
+#    Time: 167422 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=1 PropDelayY=15476 ps PropDelayFlag=19401 ps
+#    Time: 327823 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=2 PropDelayY=31909 ps PropDelayFlag=31909 ps
+#    Time: 500732 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=3 PropDelayY=16175 ps PropDelayFlag=31107 ps
+#    Time: 672839 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=4 PropDelayY=26989 ps PropDelayFlag=26989 ps
+#    Time: 840828 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=5 PropDelayY=28913 ps PropDelayFlag=30157 ps
+#    Time: 1011985 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=6 PropDelayY=30711 ps PropDelayFlag=30711 ps
+#    Time: 1183696 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=7 PropDelayY=30711 ps PropDelayFlag=30711 ps
+#    Time: 1355407 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=8 PropDelayY=18452 ps PropDelayFlag=22117 ps
+#    Time: 1518524 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=9 PropDelayY=18828 ps PropDelayFlag=26422 ps
+#    Time: 1685946 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=10 PropDelayY=19048 ps PropDelayFlag=19401 ps
+#    Time: 1846347 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=11 PropDelayY=19255 ps PropDelayFlag=19401 ps
+#    Time: 2006748 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=12 PropDelayY=20030 ps PropDelayFlag=22165 ps
+#    Time: 2169913 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=13 PropDelayY=20091 ps PropDelayFlag=20091 ps
+#    Time: 2331004 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=14 PropDelayY=21067 ps PropDelayFlag=21067 ps
+#    Time: 2493071 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=15 PropDelayY=18687 ps PropDelayFlag=19388 ps
+#    Time: 2653459 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=16 PropDelayY=20441 ps PropDelayFlag=22117 ps
+#    Time: 2816576 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=17 PropDelayY=20441 ps PropDelayFlag=22165 ps
+#    Time: 2979741 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=18 PropDelayY=18586 ps PropDelayFlag=19388 ps
+#    Time: 3140129 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=19 PropDelayY=18938 ps PropDelayFlag=18938 ps
+#    Time: 3300067 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=20 PropDelayY=13978 ps PropDelayFlag=13978 ps
+#    Time: 3455045 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=21 PropDelayY=16647 ps PropDelayFlag=30157 ps
+#    Time: 3626202 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=22 PropDelayY=16647 ps PropDelayFlag=16647 ps
+#    Time: 3783849 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=23 PropDelayY=13978 ps PropDelayFlag=13978 ps
+#    Time: 3938827 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=24 PropDelayY=16017 ps PropDelayFlag=16017 ps
+#    Time: 4095844 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=25 PropDelayY=16186 ps PropDelayFlag=16186 ps
+#    Time: 4253030 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=26 PropDelayY=10602 ps PropDelayFlag=10602 ps
+#    Time: 4404632 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=27 PropDelayY=8461 ps PropDelayFlag=11028 ps
+#    Time: 4556660 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=28 PropDelayY=19273 ps PropDelayFlag=19401 ps
+#    Time: 4717061 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=29 PropDelayY=8324 ps PropDelayFlag=10602 ps
+#    Time: 4868663 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=30 PropDelayY=15476 ps PropDelayFlag=19401 ps
+#    Time: 5029064 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=31 PropDelayY=26664 ps PropDelayFlag=26664 ps
+#    Time: 5196728 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=32 PropDelayY=25725 ps PropDelayFlag=27562 ps
+#    Time: 5365290 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=33 PropDelayY=20909 ps PropDelayFlag=22117 ps
+#    Time: 5528407 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=34 PropDelayY=31909 ps PropDelayFlag=31909 ps
+#    Time: 5701316 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=35 PropDelayY=16689 ps PropDelayFlag=26621 ps
+#    Time: 5868937 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=36 PropDelayY=19255 ps PropDelayFlag=19401 ps
+#    Time: 6029338 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=37 PropDelayY=18687 ps PropDelayFlag=19388 ps
+#    Time: 6189726 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=38 PropDelayY=18586 ps PropDelayFlag=19388 ps
+#    Time: 6350114 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=39 PropDelayY=19328 ps PropDelayFlag=19328 ps
+#    Time: 6510442 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: All test vectors processed
+#    Time: 6510442 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: Total failures = 0
+#    Time: 6510442 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: Worst PropDelayY    = 31909 ps
+#    Time: 6510442 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: Worst PropDelayFlag = 31909 ps
+#    Time: 6510442 ps  Iteration: 0  Instance: /tbexecunit
+
+
+
+
+
+
+-- ============================================================
+-- Script     : TS_ExecUnit_Cselect_SingleSWSep2Ch_A2.do
+-- Timing Simulation Script
+-- Arithmetic : CarrySelect
+-- Shift      : SingleSW2ChSep
+-- Device     : Arria II
+-- Transcript : TS_ExecUnit_Cselect_SingleSWSep2Ch_A2.do
+-- ============================================================
+# ** Note: ** Note: Simulation started
+#    Time: 0 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=0 PropDelayY=17476 ps PropDelayFlag=25748 ps
+#    Time: 166748 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=1 PropDelayY=17476 ps PropDelayFlag=18586 ps
+#    Time: 326334 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=2 PropDelayY=24892 ps PropDelayFlag=24892 ps
+#    Time: 492226 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=3 PropDelayY=17714 ps PropDelayFlag=24892 ps
+#    Time: 658118 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=4 PropDelayY=24391 ps PropDelayFlag=24391 ps
+#    Time: 823509 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=5 PropDelayY=26115 ps PropDelayFlag=26115 ps
+#    Time: 990624 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=6 PropDelayY=24539 ps PropDelayFlag=24539 ps
+#    Time: 1156163 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=7 PropDelayY=24539 ps PropDelayFlag=24539 ps
+#    Time: 1321702 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=8 PropDelayY=15558 ps PropDelayFlag=18009 ps
+#    Time: 1480711 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=9 PropDelayY=16055 ps PropDelayFlag=24869 ps
+#    Time: 1646580 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=10 PropDelayY=15229 ps PropDelayFlag=18586 ps
+#    Time: 1806166 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=11 PropDelayY=15634 ps PropDelayFlag=18586 ps
+#    Time: 1965752 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=12 PropDelayY=16924 ps PropDelayFlag=17598 ps
+#    Time: 2124350 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=13 PropDelayY=17702 ps PropDelayFlag=17702 ps
+#    Time: 2283052 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=14 PropDelayY=18331 ps PropDelayFlag=18331 ps
+#    Time: 2442383 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=15 PropDelayY=15999 ps PropDelayFlag=17598 ps
+#    Time: 2600981 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=16 PropDelayY=17758 ps PropDelayFlag=18009 ps
+#    Time: 2759990 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=17 PropDelayY=17505 ps PropDelayFlag=17598 ps
+#    Time: 2918588 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=18 PropDelayY=17435 ps PropDelayFlag=17598 ps
+#    Time: 3077186 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=19 PropDelayY=16002 ps PropDelayFlag=16002 ps
+#    Time: 3234188 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=20 PropDelayY=14973 ps PropDelayFlag=14973 ps
+#    Time: 3390161 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=21 PropDelayY=14063 ps PropDelayFlag=25748 ps
+#    Time: 3556909 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=22 PropDelayY=14059 ps PropDelayFlag=14059 ps
+#    Time: 3711968 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=23 PropDelayY=14732 ps PropDelayFlag=14732 ps
+#    Time: 3867700 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=24 PropDelayY=14063 ps PropDelayFlag=14063 ps
+#    Time: 4022763 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=25 PropDelayY=15817 ps PropDelayFlag=15817 ps
+#    Time: 4179580 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=26 PropDelayY=11713 ps PropDelayFlag=11713 ps
+#    Time: 4332293 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=27 PropDelayY=11668 ps PropDelayFlag=11668 ps
+#    Time: 4484961 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=28 PropDelayY=11375 ps PropDelayFlag=11577 ps
+#    Time: 4637538 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=29 PropDelayY=9532 ps PropDelayFlag=11713 ps
+#    Time: 4790251 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=30 PropDelayY=17219 ps PropDelayFlag=18586 ps
+#    Time: 4949837 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=31 PropDelayY=23091 ps PropDelayFlag=23091 ps
+#    Time: 5113928 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=32 PropDelayY=22948 ps PropDelayFlag=23828 ps
+#    Time: 5278756 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=33 PropDelayY=18142 ps PropDelayFlag=19837 ps
+#    Time: 5439593 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=34 PropDelayY=24892 ps PropDelayFlag=24892 ps
+#    Time: 5605485 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=35 PropDelayY=17476 ps PropDelayFlag=17844 ps
+#    Time: 5764329 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=36 PropDelayY=15634 ps PropDelayFlag=18586 ps
+#    Time: 5923915 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=37 PropDelayY=15999 ps PropDelayFlag=17598 ps
+#    Time: 6082513 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=38 PropDelayY=17435 ps PropDelayFlag=17598 ps
+#    Time: 6241111 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=39 PropDelayY=17029 ps PropDelayFlag=17029 ps
+#    Time: 6399140 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: All test vectors processed
+#    Time: 6399140 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: Total failures = 0
+#    Time: 6399140 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: Worst PropDelayY    = 26115 ps
+#    Time: 6399140 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: Worst PropDelayFlag = 26115 ps
+#    Time: 6399140 ps  Iteration: 0  Instance: /tbexecunit
+
+
+
+
+
+
+-- ============================================================
+-- Script     : TS_ExecUnit_BCLA_Dual2ChUni_C4.do
+-- Timing Simulation Script
+-- Arithmetic : Block Carry Look Ahead
+-- Shift      : Dual2ChUni
+-- Device     : Cyclone IV
+-- Transcript : TS_ExecUnit_BCLA_Dual2ChUni_C4.txt
+-- ============================================================
+# ** Note: ** Note: Simulation started
+#    Time: 0 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=0 PropDelayY=14572 ps PropDelayFlag=48316 ps
+#    Time: 189316 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=1 PropDelayY=14572 ps PropDelayFlag=16610 ps
+#    Time: 346926 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=2 PropDelayY=49445 ps PropDelayFlag=49445 ps
+#    Time: 537371 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=3 PropDelayY=14080 ps PropDelayFlag=46100 ps
+#    Time: 724471 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=4 PropDelayY=41809 ps PropDelayFlag=43443 ps
+#    Time: 908914 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=5 PropDelayY=47862 ps PropDelayFlag=47912 ps
+#    Time: 1097826 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=6 PropDelayY=49506 ps PropDelayFlag=50296 ps
+#    Time: 1289122 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=7 PropDelayY=49506 ps PropDelayFlag=49506 ps
+#    Time: 1479628 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=8 PropDelayY=22078 ps PropDelayFlag=36519 ps
+#    Time: 1657147 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=9 PropDelayY=22108 ps PropDelayFlag=48316 ps
+#    Time: 1846463 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=10 PropDelayY=21117 ps PropDelayFlag=22508 ps
+#    Time: 2009971 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=11 PropDelayY=18702 ps PropDelayFlag=22508 ps
+#    Time: 2173479 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=12 PropDelayY=22892 ps PropDelayFlag=27049 ps
+#    Time: 2341528 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=13 PropDelayY=22276 ps PropDelayFlag=22276 ps
+#    Time: 2504804 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=14 PropDelayY=20339 ps PropDelayFlag=20339 ps
+#    Time: 2666143 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=15 PropDelayY=21518 ps PropDelayFlag=22721 ps
+#    Time: 2829864 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=16 PropDelayY=22562 ps PropDelayFlag=36519 ps
+#    Time: 3007383 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=17 PropDelayY=22562 ps PropDelayFlag=22721 ps
+#    Time: 3171104 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=18 PropDelayY=22744 ps PropDelayFlag=22744 ps
+#    Time: 3334848 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=19 PropDelayY=22164 ps PropDelayFlag=22164 ps
+#    Time: 3498012 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=20 PropDelayY=13978 ps PropDelayFlag=13978 ps
+#    Time: 3652990 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=21 PropDelayY=16647 ps PropDelayFlag=45989 ps
+#    Time: 3839979 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=22 PropDelayY=16647 ps PropDelayFlag=16647 ps
+#    Time: 3997626 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=23 PropDelayY=13978 ps PropDelayFlag=13978 ps
+#    Time: 4152604 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=24 PropDelayY=16017 ps PropDelayFlag=16017 ps
+#    Time: 4309621 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=25 PropDelayY=16186 ps PropDelayFlag=16186 ps
+#    Time: 4466807 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=26 PropDelayY=9005 ps PropDelayFlag=9005 ps
+#    Time: 4616812 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=27 PropDelayY=8309 ps PropDelayFlag=9284 ps
+#    Time: 4767096 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=28 PropDelayY=8941 ps PropDelayFlag=9375 ps
+#    Time: 4917471 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=29 PropDelayY=8489 ps PropDelayFlag=9005 ps
+#    Time: 5067476 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=30 PropDelayY=13809 ps PropDelayFlag=16610 ps
+#    Time: 5225086 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=31 PropDelayY=27002 ps PropDelayFlag=33166 ps
+#    Time: 5399252 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=32 PropDelayY=27072 ps PropDelayFlag=30772 ps
+#    Time: 5571024 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=33 PropDelayY=22278 ps PropDelayFlag=33277 ps
+#    Time: 5745301 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=34 PropDelayY=49445 ps PropDelayFlag=49445 ps
+#    Time: 5935746 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=35 PropDelayY=15017 ps PropDelayFlag=16370 ps
+#    Time: 6093116 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=36 PropDelayY=18702 ps PropDelayFlag=22508 ps
+#    Time: 6256624 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=37 PropDelayY=21518 ps PropDelayFlag=22721 ps
+#    Time: 6420345 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=38 PropDelayY=22744 ps PropDelayFlag=22744 ps
+#    Time: 6584089 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=39 PropDelayY=22737 ps PropDelayFlag=22737 ps
+#    Time: 6747826 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: All test vectors processed
+#    Time: 6747826 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: Total failures = 0
+#    Time: 6747826 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: Worst PropDelayY    = 49506 ps
+#    Time: 6747826 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: Worst PropDelayFlag = 50296 ps
+#    Time: 6747826 ps  Iteration: 0  Instance: /tbexecunit
+
+
+
+
+
+-- ============================================================
+-- Script     : TS_ExecUnit_BCLA_Dual2ChUni_A2.do
+-- Timing Simulation Script
+-- Arithmetic : Block Carry Look Ahead
+-- Shift      : Dual2ChUni
+-- Device     : Arria II
+-- Transcript : TS_ExecUnit_BCLA_Dual2ChUni_A2.txt
+-- ============================================================
+# ** Note: ** Note: Simulation started
+#    Time: 0 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=0 PropDelayY=13394 ps PropDelayFlag=26144 ps
+#    Time: 167144 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=1 PropDelayY=13394 ps PropDelayFlag=13677 ps
+#    Time: 321821 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=2 PropDelayY=26555 ps PropDelayFlag=26555 ps
+#    Time: 489376 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=3 PropDelayY=13569 ps PropDelayFlag=26938 ps
+#    Time: 657314 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=4 PropDelayY=25161 ps PropDelayFlag=26378 ps
+#    Time: 824692 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=5 PropDelayY=25275 ps PropDelayFlag=25393 ps
+#    Time: 991085 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=6 PropDelayY=26128 ps PropDelayFlag=26128 ps
+#    Time: 1158213 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=7 PropDelayY=26128 ps PropDelayFlag=26128 ps
+#    Time: 1325341 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=8 PropDelayY=16624 ps PropDelayFlag=26378 ps
+#    Time: 1492719 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=9 PropDelayY=15850 ps PropDelayFlag=26144 ps
+#    Time: 1659863 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=10 PropDelayY=16118 ps PropDelayFlag=16118 ps
+#    Time: 1816981 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=11 PropDelayY=14899 ps PropDelayFlag=15985 ps
+#    Time: 1973966 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=12 PropDelayY=16558 ps PropDelayFlag=16558 ps
+#    Time: 2131524 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=13 PropDelayY=16582 ps PropDelayFlag=16582 ps
+#    Time: 2289106 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=14 PropDelayY=17238 ps PropDelayFlag=17238 ps
+#    Time: 2447344 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=15 PropDelayY=15903 ps PropDelayFlag=15903 ps
+#    Time: 2604247 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=16 PropDelayY=16074 ps PropDelayFlag=26378 ps
+#    Time: 2771625 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=17 PropDelayY=16074 ps PropDelayFlag=16074 ps
+#    Time: 2928699 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=18 PropDelayY=17752 ps PropDelayFlag=19849 ps
+#    Time: 3089548 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=19 PropDelayY=14893 ps PropDelayFlag=14893 ps
+#    Time: 3245441 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=20 PropDelayY=14973 ps PropDelayFlag=14973 ps
+#    Time: 3401414 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=21 PropDelayY=14063 ps PropDelayFlag=25393 ps
+#    Time: 3567807 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=22 PropDelayY=14059 ps PropDelayFlag=14059 ps
+#    Time: 3722866 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=23 PropDelayY=14732 ps PropDelayFlag=14732 ps
+#    Time: 3878598 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=24 PropDelayY=14063 ps PropDelayFlag=14063 ps
+#    Time: 4033661 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=25 PropDelayY=15817 ps PropDelayFlag=15817 ps
+#    Time: 4190478 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=26 PropDelayY=9304 ps PropDelayFlag=9462 ps
+#    Time: 4340940 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=27 PropDelayY=9275 ps PropDelayFlag=9275 ps
+#    Time: 4491215 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=28 PropDelayY=9728 ps PropDelayFlag=12304 ps
+#    Time: 4644519 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=29 PropDelayY=9462 ps PropDelayFlag=9462 ps
+#    Time: 4794981 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=30 PropDelayY=13394 ps PropDelayFlag=13677 ps
+#    Time: 4949658 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=31 PropDelayY=17278 ps PropDelayFlag=22418 ps
+#    Time: 5113076 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=32 PropDelayY=17231 ps PropDelayFlag=20266 ps
+#    Time: 5274342 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=33 PropDelayY=16949 ps PropDelayFlag=22418 ps
+#    Time: 5437760 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=34 PropDelayY=26555 ps PropDelayFlag=26555 ps
+#    Time: 5605315 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=35 PropDelayY=13629 ps PropDelayFlag=13966 ps
+#    Time: 5760281 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=36 PropDelayY=14899 ps PropDelayFlag=15985 ps
+#    Time: 5917266 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=37 PropDelayY=15903 ps PropDelayFlag=15903 ps
+#    Time: 6074169 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=38 PropDelayY=17752 ps PropDelayFlag=19849 ps
+#    Time: 6235018 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: PASS idx=39 PropDelayY=16155 ps PropDelayFlag=16155 ps
+#    Time: 6392173 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: All test vectors processed
+#    Time: 6392173 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: Total failures = 0
+#    Time: 6392173 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: Worst PropDelayY    = 26555 ps
+#    Time: 6392173 ps  Iteration: 0  Instance: /tbexecunit
+# ** Note: ** Note: Worst PropDelayFlag = 26938 ps
+#    Time: 6392173 ps  Iteration: 0  Instance: /tbexecunit

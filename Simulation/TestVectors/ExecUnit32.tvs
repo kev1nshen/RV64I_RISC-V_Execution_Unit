@@ -1,0 +1,94 @@
+-- ExecUnit32.tvs
+-- Test vectors for 32-bit Execution Unit
+-- Format: A B FuncClass LogicFN ShiftFN AddnSub ExtWord Y Zero AltB AltBu
+-- A B Y : 32-bit hexadecimal (8 digits)
+-- FuncClass LogicFN ShiftFN : 2-bit binary
+-- AddnSub ExtWord Zero AltB AltBu : 1-bit binary
+--
+-- FuncClass: 00=shift/arith 01=logic 10=slt 11=sltu
+-- ShiftFN:   00=arith 01=sll 10=srl 11=sra
+-- LogicFN:   00=lui 01=xor 10=or 11=and
+
+-- ============================================================
+-- Section 1: Arithmetic ADD (FuncClass=00 ShiftFN=00 AddnSub=0)
+-- ============================================================
+00000000 00000000 00 00 00 0 0 00000000 1 0 0  -- ADD: zero + zero
+00000001 00000002 00 00 00 0 0 00000003 0 1 1  -- ADD: basic
+7FFFFFFF 00000001 00 00 00 0 0 80000000 0 0 0  -- ADD: positive overflow
+FFFFFFFF FFFFFFFF 00 00 00 0 0 FFFFFFFE 1 0 0  -- ADD: all ones
+0000FFFF 00000001 00 00 00 0 0 00010000 0 0 0  -- ADD: carry into upper half
+
+-- ============================================================
+-- Section 2: Arithmetic SUB (FuncClass=00 ShiftFN=00 AddnSub=1)
+-- ============================================================
+00000005 00000003 00 00 00 1 0 00000002 0 0 0  -- SUB: basic
+AAAAAAAA AAAAAAAA 00 00 00 1 0 00000000 1 0 0  -- SUB: A - A = 0
+00000000 00000001 00 00 00 1 0 FFFFFFFF 0 1 1  -- SUB: borrow
+80000000 00000001 00 00 00 1 0 7FFFFFFF 0 1 0  -- SUB: negative overflow
+FFFFFFFF 00000001 00 00 00 1 0 FFFFFFFE 0 1 0  -- SUB: max - 1
+
+-- ============================================================
+-- Section 3: SLL (FuncClass=00 ShiftFN=01)
+-- ============================================================
+00000001 00000000 00 00 01 0 0 00000001 0 0 0  -- SLL: shift by 0
+00000001 00000001 00 00 01 0 0 00000002 1 0 0  -- SLL: shift by 1
+00000001 00000010 00 00 01 0 0 00010000 0 1 1  -- SLL: shift by 16
+00000001 0000001F 00 00 01 0 0 80000000 0 1 1  -- SLL: shift by 31 (MSB)
+00000003 00000004 00 00 01 0 0 00000030 0 1 1  -- SLL: shift by 4
+
+-- ============================================================
+-- Section 4: SRL (FuncClass=00 ShiftFN=10)
+-- ============================================================
+80000000 00000000 00 00 10 0 0 80000000 0 1 0  -- SRL: shift by 0
+FFFFFFFF 00000001 00 00 10 0 0 7FFFFFFF 0 1 0  -- SRL: zero fill confirmed
+FFFF0000 00000010 00 00 10 0 0 0000FFFF 0 1 0  -- SRL: shift by 16
+80000000 0000001F 00 00 10 0 0 00000001 0 1 0  -- SRL: shift by 31
+FFFFFFFF 0000001F 00 00 10 0 0 00000001 0 1 0  -- SRL: all ones shift by 31
+
+-- ============================================================
+-- Section 5: SRA (FuncClass=00 ShiftFN=11)
+-- ============================================================
+00000010 00000001 00 00 11 0 0 00000008 0 0 0  -- SRA: positive sign fill 0
+80000000 00000001 00 00 11 0 0 C0000000 0 1 0  -- SRA: negative sign fill 1
+80000000 0000001F 00 00 11 0 0 FFFFFFFF 0 1 0  -- SRA: shift by 31 negative (all ones)
+7FFFFFFF 0000001F 00 00 11 0 0 00000000 0 0 0  -- SRA: shift by 31 positive (all zeros)
+FFFFFFFF 00000010 00 00 11 0 0 FFFFFFFF 0 1 0  -- SRA: all ones shift by 16
+
+-- ============================================================
+-- Section 6: Logic (FuncClass=01)
+-- ============================================================
+00000000 FFFFF000 01 00 00 0 0 FFFFF000 0 0 1  -- LUI: basic
+AAAAAAAA AAAAAAAA 01 01 00 0 0 00000000 1 0 0  -- XOR: self = 0
+AAAAAAAA FFFFFFFF 01 01 00 0 0 55555555 0 1 1  -- XOR: invert
+00000000 FFFFFFFF 01 10 00 0 0 FFFFFFFF 0 0 1  -- OR: zero OR all-ones
+AAAAAAAA 00000000 01 11 00 0 0 00000000 0 1 0  -- AND: with zero
+AAAAAAAA FFFFFFFF 01 11 00 0 0 AAAAAAAA 0 1 1  -- AND: with all ones
+
+-- ============================================================
+-- Section 7: SLT / SLTU (FuncClass=10/11)
+-- ============================================================
+FFFFFFFF 00000001 10 00 00 0 0 00000001 0 1 0  -- SLT: neg < pos
+00000001 FFFFFFFF 10 00 00 0 0 00000000 0 0 1  -- SLT: pos > neg
+00000000 00000001 11 00 00 0 0 00000001 0 1 1  -- SLTU: 0 < 1
+FFFFFFFF 00000001 11 00 00 0 0 00000000 0 1 0  -- SLTU: max > 1 unsigned
+00000000 00000000 10 00 00 0 0 00000000 1 0 0  -- SLT: equal
+80000000 7FFFFFFF 10 00 00 0 0 00000001 0 1 0  -- SLT: most negative < most positive
+
+-- ============================================================
+-- Section 8: ExtWord=1 (W-type, sign-extend from bit 31)
+-- ============================================================
+00000001 00000002 00 00 00 0 0 00000003 0 1 1  -- ADDW: positive (ExtWord no-op at N=32)
+7FFFFFFF 00000001 00 00 00 0 0 80000000 0 0 0  -- ADDW: overflow (ExtWord no-op at N=32)
+00000000 00000001 00 00 00 1 0 FFFFFFFF 0 1 1  -- SUBW: result negative (ExtWord no-op at N=32)
+80000000 00000001 00 00 11 0 0 C0000000 0 1 0  -- SRAW: sign fill 32-bit (ExtWord no-op at N=32)
+
+
+-- ============================================================
+-- Section 9: Worst case timing
+-- ============================================================
+FFFFFFFF 00000001 00 00 00 0 0 00000000 0 1 0  -- TIMING: full 32-bit carry ripple
+55555555 55555556 00 00 00 0 0 AAAAAAAB 0 1 1  -- TIMING: worst case carry select
+00000001 0000001F 00 00 01 0 0 80000000 0 1 1  -- TIMING: SLL all 5 stages
+80000000 0000001F 00 00 10 0 0 00000001 0 1 0  -- TIMING: SRL all 5 stages
+80000000 0000001F 00 00 11 0 0 FFFFFFFF 0 1 0  -- TIMING: SRA all 5 stages negative
+FFFFFFFF 0000001F 00 00 11 0 0 FFFFFFFF 0 1 0  -- TIMING: SRA all 5 stages all ones

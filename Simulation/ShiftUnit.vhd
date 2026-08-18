@@ -1,0 +1,1731 @@
+-- ============================================================
+-- Entity:      ShiftUnit
+-- Description: N-bit Shift subsystem for the RV64I Execution Unit
+--              Implements SLL, SRL, SRA for both 64-bit and
+--              32-bit operations using a combined barrel shifter
+--
+-- ShiftFN encoding (per FP spec):
+--   00 -> arith  : not used here, handled by Arithmetic subsystem
+--   01 -> sll    : logical left shift
+--   10 -> srl    : logical right shift
+--   11 -> sra    : arithmetic right shift
+--
+-- ExtWord:
+--   '0' -> 64-bit operation, shift amount = B(5 downto 0)
+--   '1' -> 32-bit operation, shift amount = B(4 downto 0)
+--          result is sign-extended to 64 bits
+--
+-- Notes:
+--   - Purely combinational circuit
+--   - N is assumed to be 64
+--   - Uses bit-reversal trick to implement SLL using right shifter
+--   - Fill bit for SRA is sign bit of operand A
+--   - Fill bit for SRL is '0'
+-- ============================================================
+
+Library IEEE;
+Use IEEE.std_logic_1164.all;
+Use IEEE.numeric_std.all;
+
+Entity ShiftUnit is
+    Generic ( N : natural := 64 );
+    Port (
+        A       : in  std_logic_vector(N-1 downto 0);   -- Operand to shift
+        B       : in  std_logic_vector(N-1 downto 0);   -- Shift amount
+        ShiftFN : in  std_logic_vector(1 downto 0);     -- Function select
+        ExtWord : in  std_logic;                         -- 32-bit mode
+        Y       : out std_logic_vector(N-1 downto 0)    -- Result
+    );
+End Entity ShiftUnit;
+
+--Architecture DualChainBarrel of ShiftUnit is
+--   -- 64-bit Chain Signals (6 stages)
+--   type Stage64 is array (0 to 6) of std_logic_vector(63 downto 0);
+--   signal s64 : Stage64;
+--   signal fill64 : std_logic;
+--
+--   -- 32-bit Chain Signals (5 stages)
+--   type Stage32 is array (0 to 5) of std_logic_vector(31 downto 0);
+--   signal s32 : Stage32;
+--   signal fill32 : std_logic;
+--
+--   signal Y_32_extended : std_logic_vector(63 downto 0);
+--   signal is_left : std_logic;
+--Begin
+--
+--   is_left <= '1' when ShiftFN = "01" else '0';
+--
+--   ---------------------------------------------------------------------------
+--   -- 64-BIT SHIFT CHAIN
+--   ---------------------------------------------------------------------------
+--   fill64 <= A(63) when ShiftFN = "11" else '0';
+--   s64(0) <= A;
+--
+--   gen_64bit_chain: for i in 0 to 5 generate
+--       gen_bits_64: for j in 0 to 63 generate
+--           process(s64, B, fill64, is_left) -- Added s64 to sensitivity list
+--               variable shift_amt : integer := 2**i;
+--           begin
+--               if is_left = '0' then -- Right Shift (SRL/SRA)
+--                   if j + shift_amt <= 63 then
+--                       if B(i) = '1' then
+--                           s64(i+1)(j) <= s64(i)(j + shift_amt);
+--                       else
+--                           s64(i+1)(j) <= s64(i)(j);
+--                       end if;
+--                   else
+--                       if B(i) = '1' then
+--                           s64(i+1)(j) <= fill64;
+--                       else
+--                           s64(i+1)(j) <= s64(i)(j);
+--                       end if;
+--                   end if;
+--               else -- Left Shift (SLL)
+--                   if j - shift_amt >= 0 then
+--                       if B(i) = '1' then
+--                           s64(i+1)(j) <= s64(i)(j - shift_amt);
+--                       else
+--                           s64(i+1)(j) <= s64(i)(j);
+--                       end if;
+--                   else
+--                       if B(i) = '1' then
+--                           s64(i+1)(j) <= '0';
+--                       else
+--                           s64(i+1)(j) <= s64(i)(j);
+--                       end if;
+--                   end if;
+--               end if;
+--           end process;
+--       end generate;
+--   end generate;
+--
+--   ---------------------------------------------------------------------------
+--   -- 32-BIT SHIFT CHAIN
+--   ---------------------------------------------------------------------------
+--   fill32 <= A(31) when ShiftFN = "11" else '0';
+--   s32(0) <= A(31 downto 0);
+--
+--   gen_32bit_chain: for i in 0 to 4 generate
+--       gen_bits_32: for j in 0 to 31 generate
+--           process(s32, B, fill32, is_left)
+--               variable shift_amt : integer := 2**i;
+--           begin
+--               if is_left = '0' then -- Right Shift (SRLW/SRAW)
+--                   if j + shift_amt <= 31 then
+--                       if B(i) = '1' then
+--                           s32(i+1)(j) <= s32(i)(j + shift_amt);
+--                       else
+--                           s32(i+1)(j) <= s32(i)(j);
+--                       end if;
+--                   else
+--                       if B(i) = '1' then
+--                           s32(i+1)(j) <= fill32;
+--                       else
+--                           s32(i+1)(j) <= s32(i)(j);
+--                       end if;
+--                   end if;
+--               else -- Left Shift (SLLW)
+--                   if j - shift_amt >= 0 then
+--                       if B(i) = '1' then
+--                           s32(i+1)(j) <= s32(i)(j - shift_amt);
+--                       else
+--                           s32(i+1)(j) <= s32(i)(j);
+--                       end if;
+--                   else
+--                       if B(i) = '1' then
+--                           s32(i+1)(j) <= '0';
+--                       else
+--                           s32(i+1)(j) <= s32(i)(j);
+--                       end if;
+--                   end if;
+--               end if;
+--           end process;
+--       end generate;
+--   end generate;
+--
+--   -- Sign-extend 32nd bit of the 32-bit chain result to 64 bits
+--   Y_32_extended <= (63 downto 32 => s32(5)(31)) & s32(5);
+--
+--   ---------------------------------------------------------------------------
+--   -- FINAL SELECTION
+--   ---------------------------------------------------------------------------
+--   Y <= Y_32_extended when ExtWord = '1' else s64(6);
+--
+--End Architecture DualChainBarrel;
+--
+--
+---- ============================================================
+---- Architecture 4: Sep4Ch64
+---- Group A: 4-channel stages, direct left shift, separate 32-bit chain
+----
+---- Topology:
+----   - 4-channel MUX per stage: each stage consumes 2 bits of shift amount
+----   - 64-bit chain: 3 stages (handles bits [1:0], [3:2], [5:4] of shamt)
+----   - 32-bit chain: 3 stages (handles bits [1:0], [3:2], [4] of shamt)
+----     Note: 32-bit only needs 5 bits so stage 2 is a 2-channel stage
+----   - Direct left shift (no bit-reversal)
+----
+---- Advantage: fewer stages on critical path (3 vs 6 for 2-ch)
+---- Cost: each 4-ch MUX stage is wider, so roughly same total LUTs
+---- ============================================================
+--Architecture Sep4Ch64 of ShiftUnit is
+-- 
+--    -- 64-bit chain: 4 taps (input + 3 stage outputs)
+--    type Stage64 is array (0 to 3) of std_logic_vector(63 downto 0);
+--    signal s64    : Stage64;
+--    signal fill64 : std_logic;
+-- 
+--    -- 32-bit chain: 4 taps (input + 3 stage outputs)
+--    -- Stage 2 of 32-bit is effectively 2-channel (only 1 bit of shamt left)
+--    type Stage32 is array (0 to 3) of std_logic_vector(31 downto 0);
+--    signal s32    : Stage32;
+--    signal fill32 : std_logic;
+-- 
+--    signal Y_32_ext : std_logic_vector(63 downto 0);
+--    signal is_left  : std_logic;
+-- 
+--Begin
+-- 
+--    is_left <= '1' when ShiftFN = "01" else '0';
+-- 
+--    -- --------------------------------------------------------
+--    -- 64-BIT CHAIN: 3 stages, each handling 2 bits of B
+--    -- Stage 0: B(1:0) -> shifts by 0, 1, 2, or 3
+--    -- Stage 1: B(3:2) -> shifts by 0, 4, 8, or 12
+--    -- Stage 2: B(5:4) -> shifts by 0, 16, 32, or 48
+--    -- --------------------------------------------------------
+--    fill64  <= A(63) when ShiftFN = "11" else '0';
+--    s64(0)  <= A;
+-- 
+--    gen_64_stages : for i in 0 to 2 generate
+--        gen_64_bits : for j in 0 to 63 generate
+--            process(s64, B, fill64, is_left)
+--                variable base  : integer := 4**i;  -- 1, 4, 16
+--                variable sel   : integer;
+--                variable src   : integer;
+--            begin
+--                -- sel = 0,1,2,3 based on two bits of B
+--                sel := to_integer(unsigned(B(2*i+1 downto 2*i)));
+-- 
+--                if is_left = '0' then
+--                    -- Right shift: bit j comes from j + sel*base
+--                    src := j + sel * base;
+--                    if src <= 63 then
+--                        s64(i+1)(j) <= s64(i)(src);
+--                    else
+--                        s64(i+1)(j) <= fill64;
+--                    end if;
+--                else
+--                    -- Left shift: bit j comes from j - sel*base
+--                    src := j - sel * base;
+--                    if src >= 0 then
+--                        s64(i+1)(j) <= s64(i)(src);
+--                    else
+--                        s64(i+1)(j) <= '0';
+--                    end if;
+--                end if;
+--            end process;
+--        end generate;
+--    end generate;
+-- 
+--    -- --------------------------------------------------------
+--    -- 32-BIT CHAIN: 3 stages
+--    -- Stage 0: B(1:0) -> shifts by 0, 1, 2, or 3
+--    -- Stage 1: B(3:2) -> shifts by 0, 4, 8, or 12
+--    -- Stage 2: B(4)   -> shifts by 0 or 16 (only 1 bit left, 2-ch)
+--    -- --------------------------------------------------------
+--    fill32  <= A(31) when ShiftFN = "11" else '0';
+--    s32(0)  <= A(31 downto 0);
+-- 
+--    -- Stage 0: 4-channel (B(1:0))
+--    gen_32_s0 : for j in 0 to 31 generate
+--        process(s32, B, fill32, is_left)
+--            variable sel : integer;
+--            variable src : integer;
+--        begin
+--            sel := to_integer(unsigned(B(1 downto 0)));
+--            if is_left = '0' then
+--                src := j + sel;
+--                if src <= 31 then
+--                    s32(1)(j) <= s32(0)(src);
+--                else
+--                    s32(1)(j) <= fill32;
+--                end if;
+--            else
+--                src := j - sel;
+--                if src >= 0 then
+--                    s32(1)(j) <= s32(0)(src);
+--                else
+--                    s32(1)(j) <= '0';
+--                end if;
+--            end if;
+--        end process;
+--    end generate;
+-- 
+--    -- Stage 1: 4-channel (B(3:2))
+--    gen_32_s1 : for j in 0 to 31 generate
+--        process(s32, B, fill32, is_left)
+--            variable sel : integer;
+--            variable src : integer;
+--        begin
+--            sel := to_integer(unsigned(B(3 downto 2)));
+--            if is_left = '0' then
+--                src := j + sel * 4;
+--                if src <= 31 then
+--                    s32(2)(j) <= s32(1)(src);
+--                else
+--                    s32(2)(j) <= fill32;
+--                end if;
+--            else
+--                src := j - sel * 4;
+--                if src >= 0 then
+--                    s32(2)(j) <= s32(1)(src);
+--                else
+--                    s32(2)(j) <= '0';
+--                end if;
+--            end if;
+--        end process;
+--    end generate;
+-- 
+--    -- Stage 2: 2-channel (B(4) only, shift by 0 or 16)
+--    gen_32_s2 : for j in 0 to 31 generate
+--        process(s32, B, fill32, is_left)
+--            variable src : integer;
+--        begin
+--            if is_left = '0' then
+--                src := j + 16;
+--                if B(4) = '1' then
+--                    if src <= 31 then
+--                        s32(3)(j) <= s32(2)(src);
+--                    else
+--                        s32(3)(j) <= fill32;
+--                    end if;
+--                else
+--                    s32(3)(j) <= s32(2)(j);
+--                end if;
+--            else
+--                src := j - 16;
+--                if B(4) = '1' then
+--                    if src >= 0 then
+--                        s32(3)(j) <= s32(2)(src);
+--                    else
+--                        s32(3)(j) <= '0';
+--                    end if;
+--                else
+--                    s32(3)(j) <= s32(2)(j);
+--                end if;
+--            end if;
+--        end process;
+--    end generate;
+-- 
+--    -- Sign-extend 32-bit result
+--    Y_32_ext <= (63 downto 32 => s32(3)(31)) & s32(3);
+-- 
+--    -- Output: explicit per ShiftFN spec (00=passthrough, 01=sll, 10=srl, 11=sra)
+--    process(s64, Y_32_ext, A, ShiftFN, ExtWord)
+--    begin
+--        if ShiftFN = "00" then
+--            Y <= A;
+--        elsif ExtWord = '1' then
+--            Y <= Y_32_ext;
+--        else
+--            Y <= s64(3);
+--        end if;
+--    end process;
+-- 
+--End Architecture Sep4Ch64;
+--
+---- ============================================================
+---- Architecture: Rev2Ch64
+---- Topology:
+----   - Single right-shift chain (6 x 2-channel stages)
+----   - Bit-reversal trick for SLL
+----   - 32-bit mode via zero-upper + sign-extend output
+---- ============================================================
+--Architecture Rev2Ch64 of ShiftUnit is
+--    type StageArray is array (0 to 6) of std_logic_vector(N-1 downto 0);
+--    signal stage    : StageArray;
+--    signal A_in     : std_logic_vector(N-1 downto 0);
+--    signal A_rev    : std_logic_vector(N-1 downto 0);
+--    signal Y_rev    : std_logic_vector(N-1 downto 0);
+--    signal Y_int    : std_logic_vector(N-1 downto 0);
+--    signal shamt    : std_logic_vector(5 downto 0);
+--    signal fill     : std_logic;
+--    signal is_sll   : std_logic;
+--Begin
+--    is_sll <= '1' when ShiftFN = "01" else '0';
+--
+--    -- Pre-process input
+--    -- SRAW: sign-extend from bit 31 so arithmetic shift fills correctly
+--    -- SLL/SRL word: zero upper 32 bits
+--    -- 64-bit: pass through unchanged
+--    process(A, ShiftFN, ExtWord)
+--    begin
+--        if ExtWord = '1' and ShiftFN = "11" then
+--            A_in(31 downto 0)  <= A(31 downto 0);
+--            A_in(63 downto 32) <= (others => A(31));
+--        elsif ExtWord = '1' then
+--            A_in(31 downto 0)  <= A(31 downto 0);
+--            A_in(63 downto 32) <= (others => '0');
+--        else
+--            A_in <= A;
+--        end if;
+--    end process;
+--
+--    -- Cap shamt at 5 bits for 32-bit mode
+--    shamt(4 downto 0) <= B(4 downto 0);
+--    shamt(5)          <= B(5) when ExtWord = '0' else '0';
+--
+--    -- Fill bit for SRA
+--    fill <= A(31) when (ShiftFN = "11" and ExtWord = '1')
+--       else A(63) when (ShiftFN = "11" and ExtWord = '0')
+--       else '0';
+--
+--    -- Reverse input bits for SLL
+--    gen_rev_in : for i in 0 to N-1 generate
+--        A_rev(i) <= A_in(N-1-i) when is_sll = '1' else A_in(i);
+--    end generate;
+--
+--    stage(0) <= A_rev;
+--
+--    -- 6 stages of 2-channel right-shift
+--    gen_stages : for i in 0 to 5 generate
+--        gen_bits : for j in 0 to N-1 generate
+--            process(stage, shamt, fill)
+--                variable shift_amt : integer := 2**i;
+--            begin
+--                if j + shift_amt <= N-1 then
+--                    if shamt(i) = '1' then
+--                        stage(i+1)(j) <= stage(i)(j + shift_amt);
+--                    else
+--                        stage(i+1)(j) <= stage(i)(j);
+--                    end if;
+--                else
+--                    if shamt(i) = '1' then
+--                        stage(i+1)(j) <= fill;
+--                    else
+--                        stage(i+1)(j) <= stage(i)(j);
+--                    end if;
+--                end if;
+--            end process;
+--        end generate;
+--    end generate;
+--
+--    -- Reverse output bits for SLL
+--    gen_rev_out : for i in 0 to N-1 generate
+--        Y_rev(i) <= stage(6)(N-1-i) when is_sll = '1' else stage(6)(i);
+--    end generate;
+--
+--    Y_int <= Y_rev;
+--
+--    -- Output
+--    process(Y_int, A, ShiftFN, ExtWord)
+--    begin
+--        if ShiftFN = "00" then
+--            Y <= A;
+--        else
+--            Y(31 downto 0) <= Y_int(31 downto 0);
+--            if ExtWord = '1' then
+--                Y(63 downto 32) <= (others => Y_int(31));
+--            else
+--                Y(63 downto 32) <= Y_int(63 downto 32);
+--            end if;
+--        end if;
+--    end process;
+--
+--End Architecture Rev2Ch64;
+--
+--
+---- ============================================================
+---- Architecture 5: Rev4Ch64
+---- Group B: 4-channel stages, bit-reversal for SLL, zero-upper + SgnExt
+----
+---- Topology:
+----   - 4-channel MUX per stage (3 stages for 64-bit)
+----   - Bit-reversal trick for SLL (reverse in -> right-shift -> reverse out)
+----   - 32-bit mode: zero upper bits of A, cap shamt, sign-extend output
+----
+---- Combines the MUX-width advantage of Sep4Ch64 with the single-chain
+---- advantage of RevBarrel64.
+---- ============================================================
+--Architecture Rev4Ch64 of ShiftUnit is
+--
+--   type StageArray is array (0 to 3) of std_logic_vector(N-1 downto 0);
+--   signal stage    : StageArray;
+--
+--   signal A_in     : std_logic_vector(N-1 downto 0);
+--   signal A_rev    : std_logic_vector(N-1 downto 0);
+--   signal Y_rev    : std_logic_vector(N-1 downto 0);
+--   signal Y_int    : std_logic_vector(N-1 downto 0);
+--
+--   signal shamt    : std_logic_vector(5 downto 0);
+--   signal fill     : std_logic;
+--   signal is_sll   : std_logic;
+--
+--Begin
+--
+--   is_sll <= '1' when ShiftFN = "01" else '0';
+--
+--	process(A, ShiftFN, ExtWord)
+--		begin
+--			 if ExtWord = '1' and ShiftFN = "11" then
+--				  A_in(31 downto 0)  <= A(31 downto 0);
+--				  A_in(63 downto 32) <= (others => A(31));
+--			 elsif ExtWord = '1' then
+--				  A_in(31 downto 0)  <= A(31 downto 0);
+--				  A_in(63 downto 32) <= (others => '0');
+--			 else
+--				  A_in <= A;
+--			 end if;
+--		end process;
+--
+--   shamt(4 downto 0) <= B(4 downto 0);
+--   shamt(5)          <= B(5) when ExtWord = '0' else '0';
+--
+--   fill <= A(31) when (ShiftFN = "11" and ExtWord = '1')
+--      else A(63) when (ShiftFN = "11" and ExtWord = '0')
+--      else '0';
+--
+--   gen_rev_in : for i in 0 to N-1 generate
+--       A_rev(i) <= A_in(N-1-i) when is_sll = '1' else A_in(i);
+--   end generate;
+--
+--   stage(0) <= A_rev;
+--
+--   -- 3-stage right-shift barrel using 4-channel MUXes
+--   -- Stage i handles bits [2i+1 : 2i] of shamt, shifting by 0/base/2*base/3*base
+--   gen_stages : for i in 0 to 2 generate
+--       gen_bits : for j in 0 to N-1 generate
+--           process(stage, shamt, fill)
+--               variable base : integer := 4**i;  -- 1, 4, 16
+--               variable sel  : integer;
+--               variable src  : integer;
+--           begin
+--               sel := to_integer(unsigned(shamt(2*i+1 downto 2*i)));
+--               src := j + sel * base;
+--               if src <= N-1 then
+--                   stage(i+1)(j) <= stage(i)(src);
+--               else
+--                   stage(i+1)(j) <= fill;
+--               end if;
+--           end process;
+--       end generate;
+--   end generate;
+--
+--   gen_rev_out : for i in 0 to N-1 generate
+--       Y_rev(i) <= stage(3)(N-1-i) when is_sll = '1' else stage(3)(i);
+--   end generate;
+--
+--   Y_int <= Y_rev;
+--
+--   -- Output: explicit per ShiftFN spec (00=passthrough, 01=sll, 10=srl, 11=sra)
+--   process(Y_int, A, ShiftFN, ExtWord)
+--   begin
+--       if ShiftFN = "00" then
+--           Y <= A;
+--       else
+--           Y(31 downto 0) <= Y_int(31 downto 0);
+--           if ExtWord = '1' then
+--               Y(63 downto 32) <= (others => Y_int(31));
+--           else
+--               Y(63 downto 32) <= Y_int(63 downto 32);
+--           end if;
+--       end if;
+--   end process;
+--
+--End Architecture Rev4Ch64;
+--
+--
+--
+---- ============================================================
+---- Architecture 7: Sep8Ch64
+---- Group A: 8-channel stages, direct left shift, separate 32-bit chain
+----
+---- Topology:
+----   - 8-channel MUX per stage: each stage consumes 3 bits of shift amount
+----   - 64-bit chain: 2 stages (handles bits [2:0] and [5:3] of shamt)
+----   - 32-bit chain: 2 stages (handles bits [2:0] and [4:3] of shamt)
+----     Note: stage 1 of 32-bit is a 4-channel stage (only 2 bits left)
+----   - Fewest stages on critical path of all architectures
+----   - Widest MUX fan-in: 8 inputs per bit
+----
+---- Trade-off: fewer pipeline stages but wider MUXes may be slower
+----   on FPGA due to LUT depth required for 8-input select logic.
+---- ============================================================
+--Architecture Sep8Ch64 of ShiftUnit is
+--
+--   -- 64-bit chain: 3 taps (input + 2 stage outputs)
+--   type Stage64 is array (0 to 2) of std_logic_vector(63 downto 0);
+--   signal s64    : Stage64;
+--   signal fill64 : std_logic;
+--
+--   -- 32-bit chain: 3 taps (input + 2 stage outputs)
+--   type Stage32 is array (0 to 2) of std_logic_vector(31 downto 0);
+--   signal s32    : Stage32;
+--   signal fill32 : std_logic;
+--
+--   signal Y_32_ext : std_logic_vector(63 downto 0);
+--   signal is_left  : std_logic;
+--
+--Begin
+--
+--   is_left <= '1' when ShiftFN = "01" else '0';
+--
+--   -- --------------------------------------------------------
+--   -- 64-BIT CHAIN: 2 stages
+--   -- Stage 0: B(2:0) -> shifts by 0..7   (base = 1)
+--   -- Stage 1: B(5:3) -> shifts by 0,8,16,24,32,40,48,56 (base = 8)
+--   -- --------------------------------------------------------
+--   fill64  <= A(63) when ShiftFN = "11" else '0';
+--   s64(0)  <= A;
+--
+--   gen_64_s0 : for j in 0 to 63 generate
+--       process(s64, B, fill64, is_left)
+--           variable sel : integer;
+--           variable src : integer;
+--       begin
+--           sel := to_integer(unsigned(B(2 downto 0)));
+--           if is_left = '0' then
+--               src := j + sel;
+--               if src <= 63 then s64(1)(j) <= s64(0)(src);
+--               else              s64(1)(j) <= fill64; end if;
+--           else
+--               src := j - sel;
+--               if src >= 0 then s64(1)(j) <= s64(0)(src);
+--               else             s64(1)(j) <= '0'; end if;
+--           end if;
+--       end process;
+--   end generate;
+--
+--   gen_64_s1 : for j in 0 to 63 generate
+--       process(s64, B, fill64, is_left)
+--           variable sel : integer;
+--           variable src : integer;
+--       begin
+--           sel := to_integer(unsigned(B(5 downto 3)));
+--           if is_left = '0' then
+--               src := j + sel * 8;
+--               if src <= 63 then s64(2)(j) <= s64(1)(src);
+--               else              s64(2)(j) <= fill64; end if;
+--           else
+--               src := j - sel * 8;
+--               if src >= 0 then s64(2)(j) <= s64(1)(src);
+--               else             s64(2)(j) <= '0'; end if;
+--           end if;
+--       end process;
+--   end generate;
+--
+--   -- --------------------------------------------------------
+--   -- 32-BIT CHAIN: 2 stages
+--   -- Stage 0: B(2:0) -> shifts by 0..7   (base = 1)
+--   -- Stage 1: B(4:3) -> shifts by 0,8,16,24 (base = 8, 4-channel)
+--   -- --------------------------------------------------------
+--   fill32  <= A(31) when ShiftFN = "11" else '0';
+--   s32(0)  <= A(31 downto 0);
+--
+--   -- Stage 0: 8-channel (B(2:0))
+--   gen_32_s0 : for j in 0 to 31 generate
+--       process(s32, B, fill32, is_left)
+--           variable sel : integer;
+--           variable src : integer;
+--       begin
+--           sel := to_integer(unsigned(B(2 downto 0)));
+--           if is_left = '0' then
+--               src := j + sel;
+--               if src <= 31 then s32(1)(j) <= s32(0)(src);
+--               else              s32(1)(j) <= fill32; end if;
+--           else
+--               src := j - sel;
+--               if src >= 0 then s32(1)(j) <= s32(0)(src);
+--               else             s32(1)(j) <= '0'; end if;
+--           end if;
+--       end process;
+--   end generate;
+--
+--   -- Stage 1: 4-channel (B(4:3), shift by 0/8/16/24)
+--   gen_32_s1 : for j in 0 to 31 generate
+--       process(s32, B, fill32, is_left)
+--           variable sel : integer;
+--           variable src : integer;
+--       begin
+--           sel := to_integer(unsigned(B(4 downto 3)));
+--           if is_left = '0' then
+--               src := j + sel * 8;
+--               if src <= 31 then s32(2)(j) <= s32(1)(src);
+--               else              s32(2)(j) <= fill32; end if;
+--           else
+--               src := j - sel * 8;
+--               if src >= 0 then s32(2)(j) <= s32(1)(src);
+--               else             s32(2)(j) <= '0'; end if;
+--           end if;
+--       end process;
+--   end generate;
+--
+--   Y_32_ext <= (63 downto 32 => s32(2)(31)) & s32(2);
+--
+--   -- Output: explicit per ShiftFN spec (00=passthrough, 01=sll, 10=srl, 11=sra)
+--   process(s64, Y_32_ext, A, ShiftFN, ExtWord)
+--   begin
+--       if ShiftFN = "00" then
+--           Y <= A;
+--       elsif ExtWord = '1' then
+--           Y <= Y_32_ext;
+--       else
+--           Y <= s64(2);
+--       end if;
+--   end process;
+--
+--End Architecture Sep8Ch64;
+--
+--
+---- ============================================================
+---- Architecture 8: Rev8Ch64
+---- Group B: 8-channel stages, bit-reversal, zero-upper + SgnExt
+----
+---- Topology:
+----   - Single 64-bit right-shift chain with 8-channel MUXes (2 stages)
+----   - Bit-reversal trick for SLL
+----   - 32-bit mode via zeroing upper bits and sign-extending output
+----
+---- This is the most aggressive MUX-width choice: only 2 stages deep.
+---- May be fastest or slowest depending on how Quartus maps 8-input MUXes.
+---- ============================================================
+Architecture Rev8Ch64 of ShiftUnit is
+
+   type StageArray is array (0 to 2) of std_logic_vector(N-1 downto 0);
+   signal stage    : StageArray;
+
+   signal A_in     : std_logic_vector(N-1 downto 0);
+   signal A_rev    : std_logic_vector(N-1 downto 0);
+   signal Y_rev    : std_logic_vector(N-1 downto 0);
+   signal Y_int    : std_logic_vector(N-1 downto 0);
+
+   signal shamt    : std_logic_vector(5 downto 0);
+   signal fill     : std_logic;
+   signal is_sll   : std_logic;
+
+Begin
+
+   is_sll <= '1' when ShiftFN = "01" else '0';
+
+      process(A, ShiftFN, ExtWord)
+   begin
+       if ExtWord = '1' and ShiftFN = "11" then
+           A_in(31 downto 0)  <= A(31 downto 0);
+           A_in(63 downto 32) <= (others => A(31));
+       elsif ExtWord = '1' then
+           A_in(31 downto 0)  <= A(31 downto 0);
+           A_in(63 downto 32) <= (others => '0');
+       else
+           A_in <= A;
+       end if;
+   end process;
+	
+   shamt(4 downto 0) <= B(4 downto 0);
+   shamt(5)          <= B(5) when ExtWord = '0' else '0';
+
+   fill <= A(31) when (ShiftFN = "11" and ExtWord = '1')
+      else A(63) when (ShiftFN = "11" and ExtWord = '0')
+      else '0';
+
+   gen_rev_in : for i in 0 to N-1 generate
+       A_rev(i) <= A_in(N-1-i) when is_sll = '1' else A_in(i);
+   end generate;
+
+   stage(0) <= A_rev;
+
+   -- Stage 0: 8-channel (shamt(2:0)), base shift = 1
+   gen_s0 : for j in 0 to N-1 generate
+       process(stage, shamt, fill)
+           variable sel : integer;
+           variable src : integer;
+       begin
+           sel := to_integer(unsigned(shamt(2 downto 0)));
+           src := j + sel;
+           if src <= N-1 then stage(1)(j) <= stage(0)(src);
+           else               stage(1)(j) <= fill; end if;
+       end process;
+   end generate;
+
+   -- Stage 1: 8-channel (shamt(5:3)), base shift = 8
+   gen_s1 : for j in 0 to N-1 generate
+       process(stage, shamt, fill)
+           variable sel : integer;
+           variable src : integer;
+       begin
+           sel := to_integer(unsigned(shamt(5 downto 3)));
+           src := j + sel * 8;
+           if src <= N-1 then stage(2)(j) <= stage(1)(src);
+           else               stage(2)(j) <= fill; end if;
+       end process;
+   end generate;
+
+   gen_rev_out : for i in 0 to N-1 generate
+       Y_rev(i) <= stage(2)(N-1-i) when is_sll = '1' else stage(2)(i);
+   end generate;
+
+   Y_int <= Y_rev;
+
+   -- Output: explicit per ShiftFN spec (00=passthrough, 01=sll, 10=srl, 11=sra)
+   process(Y_int, A, ShiftFN, ExtWord)
+   begin
+       if ShiftFN = "00" then
+           Y <= A;
+       else
+           Y(31 downto 0) <= Y_int(31 downto 0);
+           if ExtWord = '1' then
+               Y(63 downto 32) <= (others => Y_int(31));
+           else
+               Y(63 downto 32) <= Y_int(63 downto 32);
+           end if;
+       end if;
+   end process;
+
+End Architecture Rev8Ch64;
+--
+--
+---- ============================================================
+---- Architecture 9: Uni2ChLR
+---- Group E: 2-channel stages, unified left/right chain, SwapWord + SgnExt
+----
+---- Topology:
+----   - Single bidirectional barrel shifter chain (6 x 2-ch stages)
+----   - Direction controlled per-stage by appending ShiftFN(0) to shift amount
+----     SLL: direction bit causes left shift at each stage
+----     SRL/SRA: direction bit causes right shift
+----   - 32-bit right-shift: swap lower word to upper half before shifting,
+----     sign-extend upper 32 bits of chain output
+----   - 32-bit left-shift: zero upper bits, cap shamt, sign-extend output
+----   - SRA: sign-extend input bit before right-shift chain (no separate chain)
+----
+---- This is the "unified chain" concept from lecture page 12 option 2.
+---- Saves one chain's worth of hardware vs separate SLL/SRL chains.
+---- ============================================================
+--Architecture Uni2ChLR of ShiftUnit is
+--
+--   type StageArray is array (0 to 6) of std_logic_vector(N-1 downto 0);
+--   signal stage    : StageArray;
+--
+--   signal A_in     : std_logic_vector(N-1 downto 0); -- pre-processed input
+--   signal Y_int    : std_logic_vector(N-1 downto 0);
+--
+--   signal shamt    : std_logic_vector(5 downto 0);
+--   signal fill     : std_logic;
+--   signal is_left  : std_logic;
+--
+--Begin
+--
+--   is_left <= '1' when ShiftFN = "01" else '0';
+--
+--   -- Pre-process input:
+--   -- For 32-bit right-shifts: swap lower word to upper half
+--   -- For 32-bit left-shifts: zero upper bits
+--   -- For SRA: fill from sign bit (handled by fill signal)
+--   process(A, ShiftFN, ExtWord)
+--   begin
+--       if ExtWord = '1' and ShiftFN /= "01" then
+--           -- Right-shift word: put lower 32 bits in upper half, zero lower half
+--           A_in(63 downto 32) <= A(31 downto 0);
+--           A_in(31 downto 0)  <= (others => '0');
+--       elsif ExtWord = '1' and ShiftFN = "01" then
+--           -- Left-shift word: zero upper bits
+--           A_in(31 downto 0)  <= A(31 downto 0);
+--           A_in(63 downto 32) <= (others => '0');
+--       else
+--           A_in <= A;
+--       end if;
+--   end process;
+--
+--   -- Effective shift amount
+--   shamt(4 downto 0) <= B(4 downto 0);
+--   shamt(5)          <= B(5) when ExtWord = '0' else '0';
+--
+--   -- Fill bit for SRA
+--   fill <= A(31) when (ShiftFN = "11" and ExtWord = '1')
+--      else A(63) when (ShiftFN = "11" and ExtWord = '0')
+--      else '0';
+--
+--   stage(0) <= A_in;
+--
+--   -- Unified bidirectional chain
+--   gen_stages : for i in 0 to 5 generate
+--       gen_bits : for j in 0 to N-1 generate
+--           process(stage, shamt, fill, is_left)
+--               variable shift_amt : integer := 2**i;
+--               variable src       : integer;
+--           begin
+--               if is_left = '0' then
+--                   src := j + shift_amt;
+--                   if shamt(i) = '1' then
+--                       if src <= N-1 then stage(i+1)(j) <= stage(i)(src);
+--                       else               stage(i+1)(j) <= fill; end if;
+--                   else
+--                       stage(i+1)(j) <= stage(i)(j);
+--                   end if;
+--               else
+--                   src := j - shift_amt;
+--                   if shamt(i) = '1' then
+--                       if src >= 0 then stage(i+1)(j) <= stage(i)(src);
+--                       else             stage(i+1)(j) <= '0'; end if;
+--                   else
+--                       stage(i+1)(j) <= stage(i)(j);
+--                   end if;
+--               end if;
+--           end process;
+--       end generate;
+--   end generate;
+--
+--   Y_int <= stage(6);
+--
+--   -- Extract result:
+--   -- Right-shift word: result is in upper 32 bits, sign-extend to lower
+--   -- Output: explicit per ShiftFN spec
+--   --   00 = arith: passthrough A
+--   --   01 = sll word: result in lower 32 bits, sign-extend upper
+--   --   10/11 word: result in upper 32 bits (SwapWord), sign-extend lower
+--   --   64-bit: use full chain result
+--   process(Y_int, A, ShiftFN, ExtWord)
+--begin
+--    if ShiftFN = "00" then
+--        Y <= A;
+--    elsif ExtWord = '1' and ShiftFN /= "01" then
+--        -- Word right-shift: result is in UPPER 32 bits of Y_int
+--        -- Move it to lower 32 bits and sign extend upward
+--        -- Sign bit is Y_int(63) for both SRL (0) and SRA (A(31))
+--        Y(31 downto 0)  <= Y_int(63 downto 32);          -- result goes to lower half
+--        Y(63 downto 32) <= (others => Y_int(63));         -- sign extend upper half
+--    elsif ExtWord = '1' then
+--        -- Word left-shift: result is already in lower 32 bits
+--        Y(31 downto 0)  <= Y_int(31 downto 0);
+--        Y(63 downto 32) <= (others => Y_int(31));
+--    else
+--        Y <= Y_int;
+--    end if;
+--end process;
+--End Architecture Uni2ChLR;
+--
+--
+---- ============================================================
+---- Architecture 10: Uni4ChLR
+---- Group E: 4-channel stages, unified left/right chain, SwapWord + SgnExt
+----
+---- Topology:
+----   - Same as Uni2ChLR but uses 4-channel MUX stages (3 stages total)
+----   - Each stage handles 2 bits of shift amount simultaneously
+----   - Reduces critical path from 6 stages to 3 stages
+---- ============================================================
+--Architecture Uni4ChLR of ShiftUnit is
+--
+--   type StageArray is array (0 to 3) of std_logic_vector(N-1 downto 0);
+--   signal stage    : StageArray;
+--
+--   signal A_in     : std_logic_vector(N-1 downto 0);
+--   signal Y_int    : std_logic_vector(N-1 downto 0);
+--
+--   signal shamt    : std_logic_vector(5 downto 0);
+--   signal fill     : std_logic;
+--   signal is_left  : std_logic;
+--
+--Begin
+--
+--   is_left <= '1' when ShiftFN = "01" else '0';
+--
+--   process(A, ShiftFN, ExtWord)
+--   begin
+--       if ExtWord = '1' and ShiftFN /= "01" then
+--           A_in(63 downto 32) <= A(31 downto 0);
+--           A_in(31 downto 0)  <= (others => '0');
+--       elsif ExtWord = '1' and ShiftFN = "01" then
+--           A_in(31 downto 0)  <= A(31 downto 0);
+--           A_in(63 downto 32) <= (others => '0');
+--       else
+--           A_in <= A;
+--       end if;
+--   end process;
+--
+--   shamt(4 downto 0) <= B(4 downto 0);
+--   shamt(5)          <= B(5) when ExtWord = '0' else '0';
+--
+--   fill <= A(31) when (ShiftFN = "11" and ExtWord = '1')
+--      else A(63) when (ShiftFN = "11" and ExtWord = '0')
+--      else '0';
+--
+--   stage(0) <= A_in;
+--
+--   -- 3-stage 4-channel unified bidirectional chain
+--   gen_stages : for i in 0 to 2 generate
+--       gen_bits : for j in 0 to N-1 generate
+--           process(stage, shamt, fill, is_left)
+--               variable base : integer := 4**i;  -- 1, 4, 16
+--               variable sel  : integer;
+--               variable src  : integer;
+--           begin
+--               sel := to_integer(unsigned(shamt(2*i+1 downto 2*i)));
+--               if is_left = '0' then
+--                   src := j + sel * base;
+--                   if src <= N-1 then stage(i+1)(j) <= stage(i)(src);
+--                   else               stage(i+1)(j) <= fill; end if;
+--               else
+--                   src := j - sel * base;
+--                   if src >= 0 then stage(i+1)(j) <= stage(i)(src);
+--                   else             stage(i+1)(j) <= '0'; end if;
+--               end if;
+--           end process;
+--       end generate;
+--   end generate;
+--
+--   Y_int <= stage(3);
+--
+--   -- Output: explicit per ShiftFN spec (00=passthrough, 01=sll, 10=srl, 11=sra)
+--process(Y_int, A, ShiftFN, ExtWord)
+--begin
+--    if ShiftFN = "00" then
+--        Y <= A;
+--    elsif ExtWord = '1' and ShiftFN /= "01" then
+--        -- Word right-shift: result is in upper 32 bits, move to lower and sign extend
+--        Y(31 downto 0)  <= Y_int(63 downto 32);
+--        Y(63 downto 32) <= (others => Y_int(63));
+--    elsif ExtWord = '1' then
+--        -- Word left-shift: result in lower 32 bits, sign extend upper
+--        Y(31 downto 0)  <= Y_int(31 downto 0);
+--        Y(63 downto 32) <= (others => Y_int(31));
+--    else
+--        Y <= Y_int;
+--    end if;
+--end process;
+--
+--End Architecture Uni4ChLR;
+--
+--
+--
+--
+---- ============================================================
+---- Architecture 13: Mix248
+---- Group F: Mixed 2+4+8 channel stages, small-to-large, separate 32-bit chain
+----
+---- Topology:
+----   - 64-bit chain: 3 stages with increasing MUX width
+----       Stage 0: 2-channel (B(0)),   shifts by 0 or 1
+----       Stage 1: 4-channel (B(2:1)), shifts by 0, 2, 4, or 6
+----       Stage 2: 8-channel (B(5:3)), shifts by 0,8,16,24,32,40,48,56
+----   - 32-bit chain: 3 stages
+----       Stage 0: 2-channel (B(0)),   shifts by 0 or 1
+----       Stage 1: 4-channel (B(2:1)), shifts by 0, 2, 4, or 6
+----       Stage 2: 4-channel (B(4:3)), shifts by 0, 8, 16, or 24
+----   - Direct left shift; ExtWord selects 64/32 chain
+----
+---- Rationale: small shifts (fine-grained) handled by narrow fast MUXes;
+----   large shifts handled by wider MUXes where fan-in cost matters less.
+---- ============================================================
+--Architecture Mix248 of ShiftUnit is
+--
+--   type Stage64 is array (0 to 3) of std_logic_vector(63 downto 0);
+--   signal s64    : Stage64;
+--   signal fill64 : std_logic;
+--
+--   type Stage32 is array (0 to 3) of std_logic_vector(31 downto 0);
+--   signal s32    : Stage32;
+--   signal fill32 : std_logic;
+--
+--   signal Y_32ext : std_logic_vector(63 downto 0);
+--   signal is_left : std_logic;
+--
+--Begin
+--
+--   is_left <= '1' when ShiftFN = "01" else '0';
+--   fill64  <= A(63) when ShiftFN = "11" else '0';
+--   fill32  <= A(31) when ShiftFN = "11" else '0';
+--   s64(0)  <= A;
+--   s32(0)  <= A(31 downto 0);
+--
+--   -- 64-bit Stage 0: 2-channel, B(0), base=1
+--   gen_64_s0 : for j in 0 to 63 generate
+--       process(s64, B, fill64, is_left)
+--       begin
+--           if is_left = '0' then
+--               if j + 1 <= 63 then
+--                   if B(0) = '1' then s64(1)(j) <= s64(0)(j+1);
+--                   else               s64(1)(j) <= s64(0)(j); end if;
+--               else
+--                   if B(0) = '1' then s64(1)(j) <= fill64;
+--                   else               s64(1)(j) <= s64(0)(j); end if;
+--               end if;
+--           else
+--               if j - 1 >= 0 then
+--                   if B(0) = '1' then s64(1)(j) <= s64(0)(j-1);
+--                   else               s64(1)(j) <= s64(0)(j); end if;
+--               else
+--                   if B(0) = '1' then s64(1)(j) <= '0';
+--                   else               s64(1)(j) <= s64(0)(j); end if;
+--               end if;
+--           end if;
+--       end process;
+--   end generate;
+--
+--   -- 64-bit Stage 1: 4-channel, B(2:1), base=2
+--   gen_64_s1 : for j in 0 to 63 generate
+--       process(s64, B, fill64, is_left)
+--           variable sel : integer;
+--           variable src : integer;
+--       begin
+--           sel := to_integer(unsigned(B(2 downto 1)));
+--           if is_left = '0' then
+--               src := j + sel * 2;
+--               if src <= 63 then s64(2)(j) <= s64(1)(src);
+--               else              s64(2)(j) <= fill64; end if;
+--           else
+--               src := j - sel * 2;
+--               if src >= 0 then s64(2)(j) <= s64(1)(src);
+--               else             s64(2)(j) <= '0'; end if;
+--           end if;
+--       end process;
+--   end generate;
+--
+--   -- 64-bit Stage 2: 8-channel, B(5:3), base=8
+--   gen_64_s2 : for j in 0 to 63 generate
+--       process(s64, B, fill64, is_left)
+--           variable sel : integer;
+--           variable src : integer;
+--       begin
+--           sel := to_integer(unsigned(B(5 downto 3)));
+--           if is_left = '0' then
+--               src := j + sel * 8;
+--               if src <= 63 then s64(3)(j) <= s64(2)(src);
+--               else              s64(3)(j) <= fill64; end if;
+--           else
+--               src := j - sel * 8;
+--               if src >= 0 then s64(3)(j) <= s64(2)(src);
+--               else             s64(3)(j) <= '0'; end if;
+--           end if;
+--       end process;
+--   end generate;
+--
+--   -- 32-bit Stage 0: 2-channel, B(0), base=1
+--   gen_32_s0 : for j in 0 to 31 generate
+--       process(s32, B, fill32, is_left)
+--       begin
+--           if is_left = '0' then
+--               if j + 1 <= 31 then
+--                   if B(0) = '1' then s32(1)(j) <= s32(0)(j+1);
+--                   else               s32(1)(j) <= s32(0)(j); end if;
+--               else
+--                   if B(0) = '1' then s32(1)(j) <= fill32;
+--                   else               s32(1)(j) <= s32(0)(j); end if;
+--               end if;
+--           else
+--               if j - 1 >= 0 then
+--                   if B(0) = '1' then s32(1)(j) <= s32(0)(j-1);
+--                   else               s32(1)(j) <= s32(0)(j); end if;
+--               else
+--                   if B(0) = '1' then s32(1)(j) <= '0';
+--                   else               s32(1)(j) <= s32(0)(j); end if;
+--               end if;
+--           end if;
+--       end process;
+--   end generate;
+--
+--   -- 32-bit Stage 1: 4-channel, B(2:1), base=2
+--   gen_32_s1 : for j in 0 to 31 generate
+--       process(s32, B, fill32, is_left)
+--           variable sel : integer;
+--           variable src : integer;
+--       begin
+--           sel := to_integer(unsigned(B(2 downto 1)));
+--           if is_left = '0' then
+--               src := j + sel * 2;
+--               if src <= 31 then s32(2)(j) <= s32(1)(src);
+--               else              s32(2)(j) <= fill32; end if;
+--           else
+--               src := j - sel * 2;
+--               if src >= 0 then s32(2)(j) <= s32(1)(src);
+--               else             s32(2)(j) <= '0'; end if;
+--           end if;
+--       end process;
+--   end generate;
+--
+--   -- 32-bit Stage 2: 4-channel, B(4:3), base=8
+--   gen_32_s2 : for j in 0 to 31 generate
+--       process(s32, B, fill32, is_left)
+--           variable sel : integer;
+--           variable src : integer;
+--       begin
+--           sel := to_integer(unsigned(B(4 downto 3)));
+--           if is_left = '0' then
+--               src := j + sel * 8;
+--               if src <= 31 then s32(3)(j) <= s32(2)(src);
+--               else              s32(3)(j) <= fill32; end if;
+--           else
+--               src := j - sel * 8;
+--               if src >= 0 then s32(3)(j) <= s32(2)(src);
+--               else             s32(3)(j) <= '0'; end if;
+--           end if;
+--       end process;
+--   end generate;
+--
+--   Y_32ext <= (63 downto 32 => s32(3)(31)) & s32(3);
+--
+--   -- Output: explicit per ShiftFN spec (00=passthrough, 01=sll, 10=srl, 11=sra)
+--   process(s64, Y_32ext, A, ShiftFN, ExtWord)
+--   begin
+--       if ShiftFN = "00" then
+--           Y <= A;
+--       elsif ExtWord = '1' then
+--           Y <= Y_32ext;
+--       else
+--           Y <= s64(3);
+--       end if;
+--   end process;
+--
+--End Architecture Mix248;
+--
+--
+---- ============================================================
+---- Architecture 14: Mix824
+---- Group F: Mixed 8+2+4 channel stages, large-to-small, separate 32-bit chain
+----
+---- Topology:
+----   - 64-bit chain: 3 stages with decreasing then increasing MUX width
+----       Stage 0: 8-channel (B(2:0)), shifts by 0..7   (base=1)
+----       Stage 1: 2-channel (B(3)),   shifts by 0 or 8  (base=8)
+----       Stage 2: 4-channel (B(5:4)), shifts by 0,16,32,48 (base=16)
+----   - 32-bit chain: 3 stages
+----       Stage 0: 8-channel (B(2:0)), shifts by 0..7   (base=1)
+----       Stage 1: 2-channel (B(3)),   shifts by 0 or 8  (base=8)
+----       Stage 2: 2-channel (B(4)),   shifts by 0 or 16 (base=16)
+----
+---- Rationale: wide MUX first handles the fine-grained shift (LUT-heavy
+----   but only 1 stage); narrow middle stage; wider final stage for large shifts.
+----   Tests whether FPGA timing prefers wide-first or narrow-first ordering.
+---- ============================================================
+--Architecture Mix824 of ShiftUnit is
+--
+--   type Stage64 is array (0 to 3) of std_logic_vector(63 downto 0);
+--   signal s64    : Stage64;
+--   signal fill64 : std_logic;
+--
+--   type Stage32 is array (0 to 3) of std_logic_vector(31 downto 0);
+--   signal s32    : Stage32;
+--   signal fill32 : std_logic;
+--
+--   signal Y_32ext : std_logic_vector(63 downto 0);
+--   signal is_left : std_logic;
+--
+--Begin
+--
+--   is_left <= '1' when ShiftFN = "01" else '0';
+--   fill64  <= A(63) when ShiftFN = "11" else '0';
+--   fill32  <= A(31) when ShiftFN = "11" else '0';
+--   s64(0)  <= A;
+--   s32(0)  <= A(31 downto 0);
+--
+--   -- 64-bit Stage 0: 8-channel, B(2:0), base=1
+--   gen_64_s0 : for j in 0 to 63 generate
+--       process(s64, B, fill64, is_left)
+--           variable sel : integer;
+--           variable src : integer;
+--       begin
+--           sel := to_integer(unsigned(B(2 downto 0)));
+--           if is_left = '0' then
+--               src := j + sel;
+--               if src <= 63 then s64(1)(j) <= s64(0)(src);
+--               else              s64(1)(j) <= fill64; end if;
+--           else
+--               src := j - sel;
+--               if src >= 0 then s64(1)(j) <= s64(0)(src);
+--               else             s64(1)(j) <= '0'; end if;
+--           end if;
+--       end process;
+--   end generate;
+--
+--   -- 64-bit Stage 1: 2-channel, B(3), base=8
+--   gen_64_s1 : for j in 0 to 63 generate
+--       process(s64, B, fill64, is_left)
+--       begin
+--           if is_left = '0' then
+--               if j + 8 <= 63 then
+--                   if B(3) = '1' then s64(2)(j) <= s64(1)(j+8);
+--                   else               s64(2)(j) <= s64(1)(j); end if;
+--               else
+--                   if B(3) = '1' then s64(2)(j) <= fill64;
+--                   else               s64(2)(j) <= s64(1)(j); end if;
+--               end if;
+--           else
+--               if j - 8 >= 0 then
+--                   if B(3) = '1' then s64(2)(j) <= s64(1)(j-8);
+--                   else               s64(2)(j) <= s64(1)(j); end if;
+--               else
+--                   if B(3) = '1' then s64(2)(j) <= '0';
+--                   else               s64(2)(j) <= s64(1)(j); end if;
+--               end if;
+--           end if;
+--       end process;
+--   end generate;
+--
+--   -- 64-bit Stage 2: 4-channel, B(5:4), base=16
+--   gen_64_s2 : for j in 0 to 63 generate
+--       process(s64, B, fill64, is_left)
+--           variable sel : integer;
+--           variable src : integer;
+--       begin
+--           sel := to_integer(unsigned(B(5 downto 4)));
+--           if is_left = '0' then
+--               src := j + sel * 16;
+--               if src <= 63 then s64(3)(j) <= s64(2)(src);
+--               else              s64(3)(j) <= fill64; end if;
+--           else
+--               src := j - sel * 16;
+--               if src >= 0 then s64(3)(j) <= s64(2)(src);
+--               else             s64(3)(j) <= '0'; end if;
+--           end if;
+--       end process;
+--   end generate;
+--
+--   -- 32-bit Stage 0: 8-channel, B(2:0), base=1
+--   gen_32_s0 : for j in 0 to 31 generate
+--       process(s32, B, fill32, is_left)
+--           variable sel : integer;
+--           variable src : integer;
+--       begin
+--           sel := to_integer(unsigned(B(2 downto 0)));
+--           if is_left = '0' then
+--               src := j + sel;
+--               if src <= 31 then s32(1)(j) <= s32(0)(src);
+--               else              s32(1)(j) <= fill32; end if;
+--           else
+--               src := j - sel;
+--               if src >= 0 then s32(1)(j) <= s32(0)(src);
+--               else             s32(1)(j) <= '0'; end if;
+--           end if;
+--       end process;
+--   end generate;
+--
+--   -- 32-bit Stage 1: 2-channel, B(3), base=8
+--   gen_32_s1 : for j in 0 to 31 generate
+--       process(s32, B, fill32, is_left)
+--       begin
+--           if is_left = '0' then
+--               if j + 8 <= 31 then
+--                   if B(3) = '1' then s32(2)(j) <= s32(1)(j+8);
+--                   else               s32(2)(j) <= s32(1)(j); end if;
+--               else
+--                   if B(3) = '1' then s32(2)(j) <= fill32;
+--                   else               s32(2)(j) <= s32(1)(j); end if;
+--               end if;
+--           else
+--               if j - 8 >= 0 then
+--                   if B(3) = '1' then s32(2)(j) <= s32(1)(j-8);
+--                   else               s32(2)(j) <= s32(1)(j); end if;
+--               else
+--                   if B(3) = '1' then s32(2)(j) <= '0';
+--                   else               s32(2)(j) <= s32(1)(j); end if;
+--               end if;
+--           end if;
+--       end process;
+--   end generate;
+--
+--   -- 32-bit Stage 2: 2-channel, B(4), base=16
+--   gen_32_s2 : for j in 0 to 31 generate
+--       process(s32, B, fill32, is_left)
+--       begin
+--           if is_left = '0' then
+--               if j + 16 <= 31 then
+--                   if B(4) = '1' then s32(3)(j) <= s32(2)(j+16);
+--                   else               s32(3)(j) <= s32(2)(j); end if;
+--               else
+--                   if B(4) = '1' then s32(3)(j) <= fill32;
+--                   else               s32(3)(j) <= s32(2)(j); end if;
+--               end if;
+--           else
+--               if j - 16 >= 0 then
+--                   if B(4) = '1' then s32(3)(j) <= s32(2)(j-16);
+--                   else               s32(3)(j) <= s32(2)(j); end if;
+--               else
+--                   if B(4) = '1' then s32(3)(j) <= '0';
+--                   else               s32(3)(j) <= s32(2)(j); end if;
+--               end if;
+--           end if;
+--       end process;
+--   end generate;
+--
+--   Y_32ext <= (63 downto 32 => s32(3)(31)) & s32(3);
+--
+--   -- Output: explicit per ShiftFN spec (00=passthrough, 01=sll, 10=srl, 11=sra)
+--   process(s64, Y_32ext, A, ShiftFN, ExtWord)
+--   begin
+--       if ShiftFN = "00" then
+--           Y <= A;
+--       elsif ExtWord = '1' then
+--           Y <= Y_32ext;
+--       else
+--           Y <= s64(3);
+--       end if;
+--   end process;
+--
+--End Architecture Mix824;
+--
+--
+--
+---- ============================================================
+---- Architecture 16: SwapUp2Ch
+---- Group C: 2-channel stages, direct left, SwapWord + SgnExt upper
+----
+---- Topology:
+----   - Directly implements the lecture page 14 refined RV64I shifter diagram
+----   - Three independent 64-bit chains: SLL64, SRL64, SRA64
+----   - 32-bit right-shift: swap lower word to upper half of A before
+----     entering the right-shift chains; extract upper 32 bits and sign-extend
+----   - 32-bit left-shift: zero upper bits, shift through SLL64,
+----     sign-extend lower 32 bits of result
+----   - All chains use 2-channel (6-stage) barrel shifters
+----   - This is the closest implementation to the lecture's "refined" diagram
+---- ============================================================
+--Architecture SwapUp2Ch of ShiftUnit is
+--
+--   type Stage64 is array (0 to 6) of std_logic_vector(63 downto 0);
+--   signal sll64 : Stage64;  -- Left shift chain
+--   signal srl64 : Stage64;  -- Right logical shift chain
+--   signal sra64 : Stage64;  -- Right arithmetic shift chain
+--
+--   signal A_right  : std_logic_vector(63 downto 0); -- input for right chains
+--   signal A_left   : std_logic_vector(63 downto 0); -- input for left chain
+--   signal shamt    : std_logic_vector(5 downto 0);
+--
+--   signal Y_sll    : std_logic_vector(63 downto 0);
+--   signal Y_srl    : std_logic_vector(63 downto 0);
+--   signal Y_sra    : std_logic_vector(63 downto 0);
+--
+--Begin
+--
+--   -- --------------------------------------------------------
+--   -- Input pre-processing (lecture page 14 SwapWord concept)
+--   -- --------------------------------------------------------
+--   -- Right chains: for W-type, swap lower word to upper half
+--   process(A, ExtWord)
+--   begin
+--       if ExtWord = '1' then
+--           A_right(63 downto 32) <= A(31 downto 0); -- word in upper half
+--           A_right(31 downto 0)  <= (others => '0');
+--       else
+--           A_right <= A;
+--       end if;
+--   end process;
+--
+--   -- Left chain: for W-type, zero upper bits
+--   process(A, ExtWord)
+--   begin
+--       if ExtWord = '1' then
+--           A_left(31 downto 0)  <= A(31 downto 0);
+--           A_left(63 downto 32) <= (others => '0');
+--       else
+--           A_left <= A;
+--       end if;
+--   end process;
+--
+--   -- Shift amount: cap at 5 bits for W-type
+--   shamt(4 downto 0) <= B(4 downto 0);
+--   shamt(5)          <= B(5) when ExtWord = '0' else '0';
+--
+--   -- --------------------------------------------------------
+--   -- Initialise chain inputs
+--   -- --------------------------------------------------------
+--   sll64(0) <= A_left;
+--   srl64(0) <= A_right;
+--   sra64(0) <= A_right;
+--
+--   -- --------------------------------------------------------
+--   -- SLL64 chain: 6 stages of left shift
+--   -- --------------------------------------------------------
+--   gen_sll : for i in 0 to 5 generate
+--       gen_sll_bits : for j in 0 to 63 generate
+--           process(sll64, shamt)
+--               variable shift_amt : integer := 2**i;
+--           begin
+--               if j - shift_amt >= 0 then
+--                   if shamt(i) = '1' then
+--                       sll64(i+1)(j) <= sll64(i)(j - shift_amt);
+--                   else
+--                       sll64(i+1)(j) <= sll64(i)(j);
+--                   end if;
+--               else
+--                   if shamt(i) = '1' then
+--                       sll64(i+1)(j) <= '0';
+--                   else
+--                       sll64(i+1)(j) <= sll64(i)(j);
+--                   end if;
+--               end if;
+--           end process;
+--       end generate;
+--   end generate;
+--
+--   -- --------------------------------------------------------
+--   -- SRL64 chain: 6 stages of logical right shift (fill = '0')
+--   -- --------------------------------------------------------
+--   gen_srl : for i in 0 to 5 generate
+--       gen_srl_bits : for j in 0 to 63 generate
+--           process(srl64, shamt)
+--               variable shift_amt : integer := 2**i;
+--           begin
+--               if j + shift_amt <= 63 then
+--                   if shamt(i) = '1' then
+--                       srl64(i+1)(j) <= srl64(i)(j + shift_amt);
+--                   else
+--                       srl64(i+1)(j) <= srl64(i)(j);
+--                   end if;
+--               else
+--                   if shamt(i) = '1' then
+--                       srl64(i+1)(j) <= '0';
+--                   else
+--                       srl64(i+1)(j) <= srl64(i)(j);
+--                   end if;
+--               end if;
+--           end process;
+--       end generate;
+--   end generate;
+--
+--   -- --------------------------------------------------------
+--   -- SRA64 chain: 6 stages of arithmetic right shift
+--   -- Fill bit is A(63) for 64-bit, A(31) for 32-bit (which is now A_right(63))
+--   -- --------------------------------------------------------
+--   gen_sra : for i in 0 to 5 generate
+--       gen_sra_bits : for j in 0 to 63 generate
+--           process(sra64, shamt, A, ExtWord)
+--               variable shift_amt : integer := 2**i;
+--               variable fill_bit  : std_logic;
+--           begin
+--               -- In 32-bit mode: sign bit is A(31), now sitting at A_right(63)
+--               fill_bit := A_right(63);
+--               if j + shift_amt <= 63 then
+--                   if shamt(i) = '1' then
+--                       sra64(i+1)(j) <= sra64(i)(j + shift_amt);
+--                   else
+--                       sra64(i+1)(j) <= sra64(i)(j);
+--                   end if;
+--               else
+--                   if shamt(i) = '1' then
+--                       sra64(i+1)(j) <= fill_bit;
+--                   else
+--                       sra64(i+1)(j) <= sra64(i)(j);
+--                   end if;
+--               end if;
+--           end process;
+--       end generate;
+--   end generate;
+--
+--   -- --------------------------------------------------------
+--   -- Output assembly
+--   -- --------------------------------------------------------
+--   -- For right-shift W-type: result is in upper 32 bits of chain;
+--   --   sign-extend to lower 32 bits
+--		process(srl64, ExtWord)
+--	begin
+--		 if ExtWord = '1' then
+--			  Y_srl(31 downto 0)  <= srl64(6)(63 downto 32); -- move result to lower half
+--			  Y_srl(63 downto 32) <= (others => srl64(6)(63)); -- sign extend upper half
+--		 else
+--			  Y_srl <= srl64(6);
+--		 end if;
+--	end process;
+--
+--	process(sra64, ExtWord)
+--	begin
+--		 if ExtWord = '1' then
+--			  Y_sra(31 downto 0)  <= sra64(6)(63 downto 32); -- move result to lower half
+--			  Y_sra(63 downto 32) <= (others => sra64(6)(63)); -- sign extend upper half
+--		 else
+--			  Y_sra <= sra64(6);
+--		 end if;
+--	end process;
+--
+--   -- For left-shift W-type: result is in lower 32 bits; sign-extend upper
+--   process(sll64, ExtWord)
+--   begin
+--       if ExtWord = '1' then
+--           Y_sll(31 downto 0)  <= sll64(6)(31 downto 0);
+--           Y_sll(63 downto 32) <= (others => sll64(6)(31));
+--       else
+--           Y_sll <= sll64(6);
+--       end if;
+--   end process;
+--
+--   -- Final MUX: select based on ShiftFN
+--   with ShiftFN select Y <=
+--       Y_sll  when "01",  -- sll
+--       Y_srl  when "10",  -- srl
+--       Y_sra  when "11",  -- sra
+--       A      when others; -- passthrough for arith (ShiftFN=00)
+--
+--End Architecture SwapUp2Ch;
+
+-- ============================================================
+-- Architecture: ZeroUp2Ch
+-- Topology:
+--   - Three separate chains: SLL64, SRL64, SRA64
+--   - Each chain handles both 64-bit and 32-bit via zero-upper trick
+--   - 2-channel stages (6 stages each)
+--   - No logical operation combining
+--   - No separate 32-bit chains needed
+-- ============================================================
+--Architecture ZeroUp2Ch of ShiftUnit is
+--
+--    type Stage64 is array (0 to 6) of std_logic_vector(63 downto 0);
+--    signal sll64 : Stage64;
+--    signal srl64 : Stage64;
+--    signal sra64 : Stage64;
+--
+--    signal A_in     : std_logic_vector(63 downto 0); -- zero-upper preprocessed
+--    signal shamt    : std_logic_vector(5 downto 0);  -- capped at 5 bits for 32-bit
+--
+--    signal Y_sll    : std_logic_vector(63 downto 0);
+--    signal Y_srl    : std_logic_vector(63 downto 0);
+--    signal Y_sra    : std_logic_vector(63 downto 0);
+--
+--Begin
+--
+--    -- Zero upper 32 bits for 32-bit mode
+--    A_in(31 downto 0)  <= A(31 downto 0);
+--    A_in(63 downto 32) <= (others => '0') when ExtWord = '1'
+--                     else A(63 downto 32);
+--
+--    -- Cap shamt at 5 bits for 32-bit mode
+--    shamt(4 downto 0) <= B(4 downto 0);
+--    shamt(5)          <= B(5) when ExtWord = '0' else '0';
+--
+--	-- Initialise chain inputs
+--	sll64(0) <= A_in;
+--	srl64(0) <= A_in;
+--
+--	-- SRA input: sign-extend from bit 31 for 32-bit mode
+--	-- This ensures arithmetic right shift fills correctly
+--	-- ZeroUp works for SLL/SRL but not SRA since zeroed upper bits
+--	-- cause incorrect fill propagation
+--	process(A, ExtWord)
+--	begin
+--		 if ExtWord = '1' then
+--			  sra64(0)(31 downto 0)  <= A(31 downto 0);
+--			  sra64(0)(63 downto 32) <= (others => A(31));
+--		 else
+--			  sra64(0) <= A;
+--		 end if;
+--	end process;
+--
+--    -- --------------------------------------------------------
+--    -- SLL64 chain: 6 stages of left shift
+--    -- --------------------------------------------------------
+--    gen_sll : for i in 0 to 5 generate
+--        gen_sll_bits : for j in 0 to 63 generate
+--            process(sll64, shamt)
+--                variable shift_amt : integer := 2**i;
+--            begin
+--                if j - shift_amt >= 0 then
+--                    if shamt(i) = '1' then
+--                        sll64(i+1)(j) <= sll64(i)(j - shift_amt);
+--                    else
+--                        sll64(i+1)(j) <= sll64(i)(j);
+--                    end if;
+--                else
+--                    if shamt(i) = '1' then
+--                        sll64(i+1)(j) <= '0';
+--                    else
+--                        sll64(i+1)(j) <= sll64(i)(j);
+--                    end if;
+--                end if;
+--            end process;
+--        end generate;
+--    end generate;
+--
+--    -- --------------------------------------------------------
+--    -- SRL64 chain: 6 stages of logical right shift (fill = '0')
+--    -- --------------------------------------------------------
+--    gen_srl : for i in 0 to 5 generate
+--        gen_srl_bits : for j in 0 to 63 generate
+--            process(srl64, shamt)
+--                variable shift_amt : integer := 2**i;
+--            begin
+--                if j + shift_amt <= 63 then
+--                    if shamt(i) = '1' then
+--                        srl64(i+1)(j) <= srl64(i)(j + shift_amt);
+--                    else
+--                        srl64(i+1)(j) <= srl64(i)(j);
+--                    end if;
+--                else
+--                    if shamt(i) = '1' then
+--                        srl64(i+1)(j) <= '0';
+--                    else
+--                        srl64(i+1)(j) <= srl64(i)(j);
+--                    end if;
+--                end if;
+--            end process;
+--        end generate;
+--    end generate;
+--
+--    -- --------------------------------------------------------
+--    -- SRA64 chain: 6 stages of arithmetic right shift
+--    -- Fill bit is A(31) for 32-bit mode, A(63) for 64-bit mode
+--    -- --------------------------------------------------------
+--    gen_sra : for i in 0 to 5 generate
+--        gen_sra_bits : for j in 0 to 63 generate
+--            process(sra64, shamt, A, ExtWord)
+--                variable shift_amt : integer := 2**i;
+--                variable fill_bit  : std_logic;
+--            begin
+--                -- For 32-bit mode sign bit is A(31), for 64-bit it is A(63)
+--                if ExtWord = '1' then fill_bit := A(31); else fill_bit := A(63); end if;
+--                if j + shift_amt <= 63 then
+--                    if shamt(i) = '1' then
+--                        sra64(i+1)(j) <= sra64(i)(j + shift_amt);
+--                    else
+--                        sra64(i+1)(j) <= sra64(i)(j);
+--                    end if;
+--                else
+--                    if shamt(i) = '1' then
+--                        sra64(i+1)(j) <= fill_bit;
+--                    else
+--                        sra64(i+1)(j) <= sra64(i)(j);
+--                    end if;
+--                end if;
+--            end process;
+--        end generate;
+--    end generate;
+--
+--    -- --------------------------------------------------------
+--    -- Output assembly
+--    -- --------------------------------------------------------
+--    -- For 32-bit mode: result is in lower 32 bits, sign-extend upward from bit 31
+--    process(sll64, ExtWord)
+--    begin
+--        if ExtWord = '1' then
+--            Y_sll(31 downto 0)  <= sll64(6)(31 downto 0);
+--            Y_sll(63 downto 32) <= (others => sll64(6)(31));
+--        else
+--            Y_sll <= sll64(6);
+--        end if;
+--    end process;
+--
+--    process(srl64, ExtWord)
+--    begin
+--        if ExtWord = '1' then
+--            Y_srl(31 downto 0)  <= srl64(6)(31 downto 0);
+--            Y_srl(63 downto 32) <= (others => srl64(6)(31));
+--        else
+--            Y_srl <= srl64(6);
+--        end if;
+--    end process;
+--
+--    process(sra64, ExtWord)
+--    begin
+--        if ExtWord = '1' then
+--            Y_sra(31 downto 0)  <= sra64(6)(31 downto 0);
+--            Y_sra(63 downto 32) <= (others => sra64(6)(31));
+--        else
+--            Y_sra <= sra64(6);
+--        end if;
+--    end process;
+--
+--    -- Final MUX: select based on ShiftFN
+--    with ShiftFN select Y <=
+--        Y_sll  when "01",
+--        Y_srl  when "10",
+--        Y_sra  when "11",
+--        A      when others;
+--
+--End Architecture ZeroUp2Ch;
